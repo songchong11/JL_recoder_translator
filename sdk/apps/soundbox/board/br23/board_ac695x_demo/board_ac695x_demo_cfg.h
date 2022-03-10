@@ -25,12 +25,12 @@
 //*********************************************************************************//
 //                                  app 配置                                       //
 //*********************************************************************************//
-#define TCFG_APP_BT_EN			            1
+#define TCFG_APP_BT_EN			            0
 #define TCFG_APP_MUSIC_EN			        1
-#define TCFG_APP_LINEIN_EN					1
-#define TCFG_APP_FM_EN					    1
+#define TCFG_APP_LINEIN_EN					0
+#define TCFG_APP_FM_EN					    0
 #define TCFG_APP_PC_EN					    1
-#define TCFG_APP_RTC_EN					    1
+#define TCFG_APP_RTC_EN					    0
 #define TCFG_APP_RECORD_EN				    1
 #define TCFG_APP_SPDIF_EN                   0
 //*********************************************************************************//
@@ -63,7 +63,7 @@
 //*********************************************************************************//
 //                                 硬件SPI 配置                                        //
 //*********************************************************************************//
-#define	TCFG_HW_SPI1_ENABLE		ENABLE_THIS_MOUDLE
+#define	TCFG_HW_SPI1_ENABLE		DISABLE_THIS_MOUDLE
 //A组IO:    DI: PB2     DO: PB1     CLK: PB0
 //B组IO:    DI: PC3     DO: PC5     CLK: PC4
 #define TCFG_HW_SPI1_PORT		'A'
@@ -71,7 +71,7 @@
 #define TCFG_HW_SPI1_MODE		SPI_MODE_BIDIR_1BIT
 #define TCFG_HW_SPI1_ROLE		SPI_ROLE_MASTER
 
-#define	TCFG_HW_SPI2_ENABLE		ENABLE_THIS_MOUDLE
+#define	TCFG_HW_SPI2_ENABLE		DISABLE_THIS_MOUDLE
 //A组IO:    DI: PB8     DO: PB10    CLK: PB9
 //B组IO:    DI: PA13    DO: DM      CLK: DP
 #define TCFG_HW_SPI2_PORT		'A'
@@ -136,7 +136,7 @@
 //                                 USB 配置                                        //
 //*********************************************************************************//
 #define TCFG_PC_ENABLE                      TCFG_APP_PC_EN//PC模块使能
-#define TCFG_UDISK_ENABLE					ENABLE_THIS_MOUDLE//U盘模块使能
+#define TCFG_UDISK_ENABLE					DISABLE_THIS_MOUDLE//U盘模块使能
 #define TCFG_OTG_USB_DEV_EN                 BIT(0)//USB0 = BIT(0)  USB1 = BIT(1)
 
 #include "usb_std_class_def.h"
@@ -206,7 +206,7 @@
 //*********************************************************************************//
 //                                 iokey 配置                                      //
 //*********************************************************************************//
-#define TCFG_IOKEY_ENABLE					DISABLE_THIS_MOUDLE //是否使能IO按键
+#define TCFG_IOKEY_ENABLE					ENABLE_THIS_MOUDLE //是否使能IO按键
 
 #define TCFG_IOKEY_POWER_CONNECT_WAY		ONE_PORT_TO_LOW    //按键一端接低电平一端接IO
 
@@ -221,7 +221,7 @@
 //*********************************************************************************//
 //                                 adkey 配置                                      //
 //*********************************************************************************//
-#define TCFG_ADKEY_ENABLE                   ENABLE_THIS_MOUDLE//是否使能AD按键
+#define TCFG_ADKEY_ENABLE                   DISABLE_THIS_MOUDLE//是否使能AD按键
 #define TCFG_ADKEY_LED_IO_REUSE				DISABLE_THIS_MOUDLE	//ADKEY 和 LED IO复用，led只能设置蓝灯显示
 #define TCFG_ADKEY_PORT                     IO_PORTA_10         //AD按键端口(需要注意选择的IO口是否支持AD功能)
 #define TCFG_ADKEY_AD_CHANNEL               AD_CH_PA10
@@ -448,7 +448,7 @@ DAC硬件上的连接方式,可选的配置：
 //*********************************************************************************//
 //                                  UI 配置                                        //
 //*********************************************************************************//
-#define TCFG_UI_ENABLE 						ENABLE_THIS_MOUDLE 	//UI总开关
+#define TCFG_UI_ENABLE 						DISABLE_THIS_MOUDLE 	//UI总开关
 #define CONFIG_UI_STYLE                     STYLE_JL_LED7
 #define TCFG_UI_LED7_ENABLE 			 	ENABLE_THIS_MOUDLE 	//UI使用LED7显示
 // #define TCFG_UI_LCD_SEG3X9_ENABLE 		ENABLE_THIS_MOUDLE 	//UI使用LCD段码屏显示
@@ -541,7 +541,7 @@ DAC硬件上的连接方式,可选的配置：
 //*********************************************************************************//
 //                                  混响配置                                   //
 //*********************************************************************************//
-#define TCFG_MIC_EFFECT_ENABLE       1//DISABLE
+#define TCFG_MIC_EFFECT_ENABLE       0//1//DISABLE
 #define TCFG_MIC_EFFECT_DEBUG        0//调试打印
 #define TCFG_MIC_EFFECT_ONLINE_ENABLE  0//混响音效在线调试使能
 #if ((TCFG_ONLINE_ENABLE == 0) && TCFG_MIC_EFFECT_ONLINE_ENABLE)
@@ -609,17 +609,17 @@ DAC硬件上的连接方式,可选的配置：
 //*********************************************************************************//
 #define TCFG_USER_TWS_ENABLE                0   //tws功能使能
 #define TCFG_USER_BLE_ENABLE                0   //BLE功能使能
-#define TCFG_USER_BT_CLASSIC_ENABLE         1   //经典蓝牙功能使能
+#define TCFG_USER_BT_CLASSIC_ENABLE         0   //经典蓝牙功能使能
 #define TCFG_BT_SUPPORT_AAC                 0   //AAC格式支持
 #define TCFG_USER_EMITTER_ENABLE            0   //emitter功能使能
 #define TCFG_BT_SNIFF_ENABLE                0   //bt sniff 功能使能
 
 #define USER_SUPPORT_PROFILE_SPP    0
-#define USER_SUPPORT_PROFILE_HFP    1
-#define USER_SUPPORT_PROFILE_A2DP   1
-#define USER_SUPPORT_PROFILE_AVCTP  1
-#define USER_SUPPORT_PROFILE_HID    1
-#define USER_SUPPORT_PROFILE_PNP    1
+#define USER_SUPPORT_PROFILE_HFP    0
+#define USER_SUPPORT_PROFILE_A2DP   0
+#define USER_SUPPORT_PROFILE_AVCTP  0
+#define USER_SUPPORT_PROFILE_HID    0
+#define USER_SUPPORT_PROFILE_PNP    0
 #define USER_SUPPORT_PROFILE_PBAP   0
 
 #if TCFG_USER_TWS_ENABLE
@@ -758,7 +758,7 @@ DAC硬件上的连接方式,可选的配置：
 //*********************************************************************************//
 #define TCFG_RTC_ENABLE						TCFG_APP_RTC_EN
 
-#define TCFG_USE_VIRTUAL_RTC                   0//ENABLE    //假时钟
+#define TCFG_USE_VIRTUAL_RTC                DISABLE    //假时钟
 
 //*********************************************************************************//
 //                                  SPDIF & ARC 配置                                     //
@@ -802,13 +802,13 @@ DAC硬件上的连接方式,可选的配置：
 //*********************************************************************************//
 //                                  encoder 配置                                   //
 //*********************************************************************************//
-#define TCFG_ENC_CVSD_ENABLE               ENABLE
-#define TCFG_ENC_MSBC_ENABLE               ENABLE
+#define TCFG_ENC_CVSD_ENABLE               DISABLE
+#define TCFG_ENC_MSBC_ENABLE               DISABLE
 #define TCFG_ENC_G726_ENABLE               ENABLE
 #define TCFG_ENC_MP3_ENABLE                ENABLE
 #define TCFG_ENC_ADPCM_ENABLE              ENABLE
 #define TCFG_ENC_PCM_ENABLE                ENABLE
-#define TCFG_ENC_SBC_ENABLE                ENABLE
+#define TCFG_ENC_SBC_ENABLE                DISABLE
 #define TCFG_ENC_OPUS_ENABLE               DISABLE
 #define TCFG_ENC_SPEEX_ENABLE              DISABLE
 

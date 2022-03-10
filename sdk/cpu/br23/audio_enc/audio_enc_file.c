@@ -257,6 +257,7 @@ static void updata_wav_head_info(struct audio_encoder *encoder, void *priv)
     audio_encoder_get_fmt(encoder, &enc_fmt);
     if ((enc_fmt->coding_type != AUDIO_CODING_WAV)
         && (enc_fmt->coding_type != AUDIO_CODING_G726)
+		&& (enc_fmt->coding_type != AUDIO_CODING_PCM)
        ) {
         return;
     }
@@ -396,7 +397,10 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     u32 out_file_buf_size = 0;
     u32 pcm_buf_size = 0;
 
-    if (pfmt->coding_type != AUDIO_CODING_MP3 && pfmt->coding_type != AUDIO_CODING_WAV && pfmt->coding_type != AUDIO_CODING_G726) {
+    if (pfmt->coding_type != AUDIO_CODING_MP3 && \
+		pfmt->coding_type != AUDIO_CODING_WAV && \
+		pfmt->coding_type != AUDIO_CODING_G726&& \
+		pfmt->coding_type != AUDIO_CODING_PCM) {
         return NULL;
     }
 
@@ -451,7 +455,10 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     } else if (pfmt->coding_type == AUDIO_CODING_WAV || pfmt->coding_type == AUDIO_CODING_G726) {
         strcat(temp_filename, filename);
         strcat(temp_filename, ".wav");
-    }
+    } else if (pfmt->coding_type == AUDIO_CODING_PCM) {
+		strcat(temp_filename, filename);
+		strcat(temp_filename, ".pcm");
+	}
     pcm2file->whdl = enc_write_file_open(logo, folder, temp_filename);
     free(temp_filename);
     if (!pcm2file->whdl) {
@@ -460,7 +467,8 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
 
     enc_write_file_set_evt_handler(pcm2file->whdl, pcm2file_enc_w_evt, pcm2file);
     enc_write_file_set_input(pcm2file->whdl, &pcm2file_enc_w_input, pcm2file, sizeof(pcm2file->out_file_frame));
-    if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726)) {
+    //if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726)) {
+    if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726) || (pfmt->coding_type == AUDIO_CODING_PCM)) {
         pcm2file->file_head_len = WAV_FILE_HEAD_LEN;
         enc_write_file_set_head_handler(pcm2file->whdl, enc_wfile_set_head, pcm2file);
     }

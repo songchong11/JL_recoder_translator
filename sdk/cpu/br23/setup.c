@@ -192,6 +192,7 @@ void setup_arch()
 
     wdt_init(WDT_4S);
     /* wdt_close(); */
+	wdt_close();
 
 #if (AUDIO_OUTPUT_WAY == AUDIO_OUTPUT_WAY_FM)
     clk_init_osc_ldos(2);

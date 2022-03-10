@@ -751,8 +751,7 @@ void fm_sample_close(void *hdl, u8 source)
 
 ////>>>>>>>>>>>>>>record_player api录音接口<<<<<<<<<<<<<<<<<<<<<///
 #if 1
-
-/* #define RECORD_PLAYER_DEFULT_SAMPLERATE	(44100L) */
+//#define RECORD_PLAYER_DEFULT_SAMPLERATE	(44100L)
 #define RECORD_PLAYER_DEFULT_SAMPLERATE	(16000L)
 #define RECORD_PLAYER_DEFULT_BITRATE	(128L)
 #define RECORD_PLAYER_DEFULT_ADPCM_BLOCKSIZE (1024L) //256/512/1024/2048
@@ -947,7 +946,9 @@ int recorder_encode_start(struct record_file_fmt *f)
     struct record_hdl *rec = NULL;
 
     memcpy((u8 *)&fmt, (u8 *)f, sizeof(struct record_file_fmt));
-    if ((fmt.coding_type == AUDIO_CODING_WAV) || fmt.coding_type == AUDIO_CODING_G726) {
+    if ((fmt.coding_type == AUDIO_CODING_WAV) || \
+		fmt.coding_type == AUDIO_CODING_G726 || \
+		fmt.coding_type == AUDIO_CODING_PCM) {
         fmt.bit_rate    = RECORD_PLAYER_DEFULT_ADPCM_BLOCKSIZE;
     } else {
         fmt.bit_rate    = RECORD_PLAYER_DEFULT_BITRATE;
@@ -998,7 +999,8 @@ int recorder_encode_start(struct record_file_fmt *f)
     rec->cut_head_flag = 1;
     rec->cut_head_timer = sys_timeout_add(NULL, record_cut_head_timeout, fmt.cut_head_time);
 
-    if ((fmt.coding_type == AUDIO_CODING_WAV) || (fmt.coding_type == AUDIO_CODING_G726)) {
+    if ((fmt.coding_type == AUDIO_CODING_WAV) || (fmt.coding_type == AUDIO_CODING_G726)||
+		(fmt.coding_type == AUDIO_CODING_PCM)) {
         cut_tail_size = (4 * fmt.sample_rate * fmt.channel) * fmt.cut_tail_time / 1000 / 8;
         cut_tail_size = ((cut_tail_size + fmt.bit_rate - 1) / fmt.bit_rate) * fmt.bit_rate;
     } else {

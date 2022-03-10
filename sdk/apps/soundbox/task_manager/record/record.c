@@ -80,7 +80,7 @@ static void record_mic_start(void)
     //如果开了混合录音这里获取编码类型是为了使得保存的录音文件格式一致，主要指针对695
     fmt.coding_type = recorder_mix_get_coding_type();
 #else
-    fmt.coding_type = AUDIO_CODING_MP3; //编码格式：AUDIO_CODING_WAV, AUDIO_CODING_MP3
+    fmt.coding_type = AUDIO_CODING_WAV; //编码格式：AUDIO_CODING_WAV, AUDIO_CODING_MP3
 #endif/*RECORDER_MIX_EN*/
     fmt.channel = 1;                    //声道数： 1：单声道 2：双声道
     fmt.cut_head_time = 300;            //录音文件去头时间,单位ms
@@ -91,15 +91,15 @@ static void record_mic_start(void)
     fmt.sample_rate = MIC_EFFECT_SAMPLERATE;            //采样率：8000，16000，32000，44100
     fmt.source = ENCODE_SOURCE_MIX;     //录音输入源
 #else
-    fmt.sample_rate = 44100;            //采样率：8000，16000，32000，44100
+    fmt.sample_rate = 16000;            //采样率：8000，16000，32000，44100
     fmt.source = ENCODE_SOURCE_MIC;     //录音输入源
 #endif//TCFG_MIC_EFFECT_ENABLE
     fmt.err_callback = NULL;
     int ret = recorder_encode_start(&fmt);
     if (ret) {
-        log_e("record_mic_start fail !!, dev = %s\n", logo);
+        printf("record_mic_start fail !!, dev = %s\n", logo);
     } else {
-        log_i("record_mic_start succ !!, dev = %s\n", logo);
+        printf("record_mic_start succ !!, dev = %s\n", logo);
     }
 }
 //*----------------------------------------------------------------------------*/
