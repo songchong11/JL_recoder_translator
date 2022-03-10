@@ -152,6 +152,8 @@ static int pc_key_event_opr(struct sys_event *event)
         log_info("pc KEY_VOL_UP\n");
         hid_key_handler(0, USB_AUDIO_VOLUP);
         printf(">>>pc vol+: %d", app_audio_get_volume(APP_AUDIO_CURRENT_STATE));
+
+		hid_vender_in_handler(0, 0);
         break;
     case  KEY_VOL_DOWN:
         log_info("pc KEY_VOL_DOWN\n");

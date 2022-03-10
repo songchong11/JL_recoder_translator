@@ -88,11 +88,24 @@ static const u8 sHIDReportDesc[] = {
     USAGE(1, PLAY),
     USAGE(1, PAUSE),
 
+	REPORT_ID(1, 0x01),
     REPORT_SIZE(1, 0x01),
     REPORT_COUNT(1, 0x10),
     INPUT(1, 0x42),
     END_COLLECTION,
 
+	0x05, 0x01,    //global,  USAGE_PAGE 1 (Generic Desktop)
+    0x09, 0x00,    //usage undefined
+    0xa1, 0x01,    //main collection
+    0x85, 0x05,    //global report ID 0x5
+    0x06, 0x00, 0xff, //global usage page
+    0x09, 0x01,    //local,  usage ID 01  Consumer Control
+    0x15, 0x81,    //global min 81
+    0x25, 0x7f,    //global, max 7f
+    0x75, 0x08,    //global, report size 8
+    0x95, 0x0a,    //report count 10
+    0x81, 0x02,    //feature (data, var, abs)
+    0xc0,         //main, end collection
 };
 
 static u32 get_hid_report_desc_len(u32 index)
@@ -262,6 +275,7 @@ u32 hid_desc_config(const usb_dev usb_id, u8 *ptr, u32 *cur_itf_num)
     return sizeof(sHIDDescriptor) ;
 }
 
+#if 0
 void hid_key_handler(struct usb_device_t *usb_device, u32 hid_key)
 {
     const usb_dev usb_id = usb_device2id(usb_device);
@@ -271,6 +285,48 @@ void hid_key_handler(struct usb_device_t *usb_device, u32 hid_key)
     os_time_dly(2);
     key_buf = 0;
     hid_tx_data(usb_device, (const u8 *)&key_buf, 2);
+}
+#endif
+
+void hid_key_handler(struct usb_device_t *usb_device, u32 hid_key)
+{
+    const usb_dev usb_id = usb_device2id(usb_device);
+
+    //u16 key_buf = hid_key;
+    u8 key_buf[3];
+
+	key_buf[0] = 0x01;
+	key_buf[1] = hid_key & 0xff;
+	key_buf[2] = (hid_key << 8) & 0xff;
+    hid_tx_data(usb_device, (const u8 *)key_buf, sizeof(key_buf));
+    os_time_dly(2);
+	key_buf[1] = 0;
+	key_buf[2] = 0;
+
+    hid_tx_data(usb_device, (const u8 *)key_buf, sizeof(key_buf));
+}
+
+#define	VENDOR_IN_REPORT_ID		0x05
+void hid_vender_in_handler(struct usb_device_t *usb_device, u32 hid_key)
+{
+    const usb_dev usb_id = usb_device2id(usb_device);
+
+    //u16 key_buf = hid_key;
+    u8 key_buf[10];
+
+	key_buf[0] = VENDOR_IN_REPORT_ID;
+	key_buf[1] = 0x0a;
+	key_buf[2] = 0x0b;
+	key_buf[3] = 3;
+	key_buf[4] = 4;
+	key_buf[5] = 5;
+	key_buf[6] = 6;
+	key_buf[7] = 7;
+	key_buf[8] = 8;
+	key_buf[9] = 9;
+	
+    hid_tx_data(usb_device, (const u8 *)key_buf, sizeof(key_buf));
+    os_time_dly(2);
 }
 
 
