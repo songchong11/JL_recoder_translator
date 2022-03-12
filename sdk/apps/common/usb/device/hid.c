@@ -28,8 +28,8 @@ static const u8 sHIDDescriptor[] = {
     /* 0x04,                      // bInterface number */
     0x00,                       // bInterface number
     0x00,                      // AlternateSetting
-    0x01,                      // NumEndpoint
-    /* 0x02,                        // NumEndpoint */
+   // 0x01,                      // NumEndpoint
+    0x02,                        // NumEndpoint
     USB_CLASS_HID,             // Class = Human Interface Device
     0x00,                      // Subclass, 0 No subclass, 1 Boot Interface subclass
     0x00,                      // Procotol, 0 None, 1 Keyboard, 2 Mouse
@@ -54,12 +54,12 @@ static const u8 sHIDDescriptor[] = {
     10,     // Poll every 10msec seconds
 
 //@Endpoint Descriptor:
-    /* USB_DT_ENDPOINT_SIZE,       // bLength
+    USB_DT_ENDPOINT_SIZE,       // bLength
     USB_DT_ENDPOINT,            // bDescriptorType, Type
     USB_DIR_OUT | HID_EP_OUT,   // bEndpointAddress
     USB_ENDPOINT_XFER_INT,      // Interrupt
     LOBYTE(MAXP_SIZE_HIDOUT), HIBYTE(MAXP_SIZE_HIDOUT),// Maximum packet size
-    0x01,                       // bInterval, for high speed 2^(n-1) * 125us, for full/low speed n * 1ms */
+    0x01,                       // bInterval, for high speed 2^(n-1) * 125us, for full/low speed n * 1ms
 };
 
 static const u8 sHIDReportDesc[] = {
@@ -93,7 +93,7 @@ static const u8 sHIDReportDesc[] = {
     REPORT_COUNT(1, 0x10),
     INPUT(1, 0x42),
     END_COLLECTION,
-
+	// vendor hid in
 	0x05, 0x01,    //global,  USAGE_PAGE 1 (Generic Desktop)
     0x09, 0x00,    //usage undefined
     0xa1, 0x01,    //main collection
@@ -103,8 +103,22 @@ static const u8 sHIDReportDesc[] = {
     0x15, 0x81,    //global min 81
     0x25, 0x7f,    //global, max 7f
     0x75, 0x08,    //global, report size 8
-    0x95, 0x0a,    //report count 10
+    0x95, 0x3f,    //report count 10
     0x81, 0x02,    //feature (data, var, abs)
+    0xc0,         //main, end collection
+
+	//vendor hid out
+	0x05, 0x01,    //global,  USAGE_PAGE 1 (Generic Desktop)
+    0x09, 0x00,    //usage undefined
+    0xa1, 0x01,    //main collection
+    0x85, 0x07,    //global report ID 0x5
+    0x06, 0x00, 0xff, //global usage page
+    0x09, 0x01,    //local,  usage ID 01  Consumer Control
+    0x15, 0x81,    //global min 81
+    0x25, 0x7f,    //global, max 7f
+    0x75, 0x08,    //global, report size 8
+    0x95, 0x3f,    //report count 10
+    0xb1, 0x02,    //feature (data, var, abs)
     0xc0,         //main, end collection
 };
 
@@ -132,6 +146,12 @@ static void hid_rx_data(struct usb_device_t *usb_device, u32 ep)
     const usb_dev usb_id = usb_device2id(usb_device);
     u8 *ep_buffer = usb_get_ep_buffer(usb_id, HID_EP_OUT);
     u32 rx_len = usb_g_intr_read(usb_id, ep, NULL, 64, 0);
+	printf("receive out data: ");
+	for (int i = 0; i < rx_len; i++)
+		printf("%x ", ep_buffer[i]);
+
+	printf("send back data\r\n");
+
     hid_tx_data(usb_device, ep_buffer, rx_len);
 }
 
@@ -167,7 +187,10 @@ static u32 hid_recv_output_report(struct usb_device_t *usb_device, struct usb_ct
     usb_read_ep0(usb_id, read_ep, MIN(sizeof(read_ep), setup->wLength));
     ret = USB_EP0_STAGE_SETUP;
     put_buf(read_ep, 8);
-
+	printf("receive set report: %x %x %x %x %x %x %x %x\n", read_ep[0], read_ep[1], \
+															read_ep[2], read_ep[3], \
+															read_ep[4], read_ep[5], \
+															read_ep[6], read_ep[7]);
 
     return ret;
 }
@@ -315,8 +338,8 @@ void hid_vender_in_handler(struct usb_device_t *usb_device, u32 hid_key)
     u8 key_buf[10];
 
 	key_buf[0] = VENDOR_IN_REPORT_ID;
-	key_buf[1] = 0x0a;
-	key_buf[2] = 0x0b;
+	key_buf[1] = 1;
+	key_buf[2] = 2;
 	key_buf[3] = 3;
 	key_buf[4] = 4;
 	key_buf[5] = 5;

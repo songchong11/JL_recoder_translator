@@ -21,10 +21,10 @@
 #define     HID_EP_IN                   2
 #define     HID_EP_OUT                  2
 
-#define     MAXP_SIZE_HIDOUT            8
-#define     MAXP_SIZE_HIDIN             8
-/* #define     MAXP_SIZE_HIDOUT            64 */
-/* #define     MAXP_SIZE_HIDIN             64 */
+//#define     MAXP_SIZE_HIDOUT            8
+//#define     MAXP_SIZE_HIDIN             8
+#define     MAXP_SIZE_HIDOUT            64
+#define     MAXP_SIZE_HIDIN             64
 
 
 

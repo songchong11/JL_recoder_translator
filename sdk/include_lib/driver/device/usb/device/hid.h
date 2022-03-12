@@ -127,5 +127,7 @@
 
 u32 hid_desc_config(const usb_dev usb_id, u8 *ptr, u32 *cur_itf_num);
 void hid_key_handler(struct usb_device_t *usb_device, u32 hid_key);
+void hid_vender_in_handler(struct usb_device_t *usb_device, u32 hid_key);
+
 u32 hid_send_data(const void *p, u32 len);
 #endif
