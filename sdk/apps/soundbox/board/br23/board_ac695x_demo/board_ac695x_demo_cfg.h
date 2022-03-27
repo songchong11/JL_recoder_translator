@@ -809,7 +809,7 @@ DAC硬件上的连接方式,可选的配置：
 #define TCFG_ENC_ADPCM_ENABLE              ENABLE
 #define TCFG_ENC_PCM_ENABLE                ENABLE
 #define TCFG_ENC_SBC_ENABLE                DISABLE
-#define TCFG_ENC_OPUS_ENABLE               DISABLE
+#define TCFG_ENC_OPUS_ENABLE               ENABLE
 #define TCFG_ENC_SPEEX_ENABLE              DISABLE
 
 //*********************************************************************************//
