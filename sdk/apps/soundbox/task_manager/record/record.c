@@ -80,10 +80,10 @@ static void record_mic_start(void)
     //如果开了混合录音这里获取编码类型是为了使得保存的录音文件格式一致，主要指针对695
     fmt.coding_type = recorder_mix_get_coding_type();
 #else
-    fmt.coding_type = AUDIO_CODING_PCM; //编码格式：AUDIO_CODING_WAV, AUDIO_CODING_MP3
+    fmt.coding_type = AUDIO_CODING_OPUS; //编码格式：AUDIO_CODING_WAV, AUDIO_CODING_MP3
 #endif/*RECORDER_MIX_EN*/
     fmt.channel = 1;                    //声道数： 1：单声道 2：双声道
-    fmt.cut_head_time = 300;            //录音文件去头时间,单位ms
+	fmt.cut_head_time = 300;            //录音文件去头时间,单位ms
     fmt.cut_tail_time = 300;            //录音文件去尾时间,单位ms
     fmt.limit_size = 3000;              //录音文件大小最小限制， 单位byte
     fmt.gain = 8;

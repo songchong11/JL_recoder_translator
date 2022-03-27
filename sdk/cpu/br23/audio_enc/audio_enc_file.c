@@ -35,21 +35,32 @@
 //是否使用overlay 使能， 695暂时不支持overlay
 #define PCM_ENC2FILE_USE_OVERLAY_EN			0
 
+#define ENC_ADC_BUF_NUM        (2)
+#define ENC_ADC_IRQ_POINTS     (320)
+#define ENC_ADC_BUFS_SIZE      (ENC_ADC_BUF_NUM * ENC_ADC_IRQ_POINTS)
+
+#define MIC_USE_MIC_CHANNEL    (1)
+#define MIC_ENC_IN_SIZE		(ENC_ADC_IRQ_POINTS * 2)
+#define MIC_ENC_OUT_SIZE       (ENC_ADC_IRQ_POINTS)
 
 extern struct audio_encoder_task *encode_task;
 
 struct pcm2file_enc_hdl {
     struct audio_encoder encoder;
-    s16 output_frame[1152 / 2];             //align 4Bytes
+    //s16 output_frame[1152 / 2];             //align 4Bytes
+	u8  output_frame[MIC_ENC_OUT_SIZE];
+    //int pcm_frame[64];                 //align 4Bytes
+	u8	pcm_frame[MIC_ENC_IN_SIZE];
 
-    int pcm_frame[64];                 //align 4Bytes
     u8 file_head_frame[128];
     u8 file_head_len;
     /* u8 pcm_buf[PCM_ENC2FILE_PCM_LEN]; */
     u8 *pcm_buf;
     cbuffer_t pcm_cbuf;
 
-    int out_file_frame[512 / 4];
+    //int out_file_frame[512 / 4];
+	int out_file_frame[MIC_ENC_OUT_SIZE];
+
     /* u8 out_file_buf[PCM_ENC2FILE_FILE_LEN]; */
     u8 *out_file_buf;
     cbuffer_t out_file_cbuf;
@@ -59,20 +70,20 @@ struct pcm2file_enc_hdl {
     OS_MUTEX mutex;
 
     volatile u32 status : 1;
-        volatile u32 enc_err : 1;
-        volatile u32 encoding : 1;
-        volatile u32 write_head_busy : 1;
+    volatile u32 enc_err : 1;
+    volatile u32 encoding : 1;
+    volatile u32 write_head_busy : 1;
 
-        u32 lost;
+    u32 lost;
 
 #if PCM2FILE_ENC_BUF_COUNT
         u16 pcm_buf_max;
         u16 out_file_max;
 #endif
 
-        u32 head_update_tick;
+	u32 head_update_tick;
 
-    };
+};
 
 
     static volatile u8 pcm2file_used_overlay = 0;
@@ -120,7 +131,7 @@ int pcm2file_enc_write_pcm(void *priv, s16 *data, int len)
             enc->pcm_buf_max = enc->pcm_cbuf.data_len;
         }
 #endif
-        /* printf("wl:%d ", wlen); */
+         /*printf("wl:%d ", wlen);*/
         // 激活录音编码器
         pcm2file_enc_resume(enc);
     }
@@ -142,7 +153,7 @@ static int pcm2file_enc_pcm_get(struct audio_encoder *encoder, s16 **frame, u16 
         r_printf("enc NULL");
     }
 
-    /* printf("l:%d", frame_len); */
+	printf("l:%d", frame_len);
 
     if (!enc->status) {
         return 0;
@@ -400,6 +411,7 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     if (pfmt->coding_type != AUDIO_CODING_MP3 && \
 		pfmt->coding_type != AUDIO_CODING_WAV && \
 		pfmt->coding_type != AUDIO_CODING_G726&& \
+		pfmt->coding_type != AUDIO_CODING_OPUS&& \
 		pfmt->coding_type != AUDIO_CODING_PCM) {
         return NULL;
     }
@@ -428,8 +440,10 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
         if (!pcm2file) {
             goto __out;
         }
-        pcm_buf_size = PCM_ENC2FILE_PCM_LEN;
+        //pcm_buf_size = PCM_ENC2FILE_PCM_LEN;
+		pcm_buf_size = MIC_ENC_IN_SIZE * 4;
         out_file_buf_size = PCM_ENC2FILE_FILE_LEN;
+        //out_file_buf_size = MIC_ENC_OUT_SIZE;
         pcm2file->pcm_buf = zalloc(pcm_buf_size);
         if (pcm2file->pcm_buf == NULL) {
             goto __out;
@@ -458,17 +472,21 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     } else if (pfmt->coding_type == AUDIO_CODING_PCM) {
 		strcat(temp_filename, filename);
 		strcat(temp_filename, ".pcm");
+	} else if (pfmt->coding_type == AUDIO_CODING_OPUS) {
+		strcat(temp_filename, filename);
+		strcat(temp_filename, ".opu");
 	}
     pcm2file->whdl = enc_write_file_open(logo, folder, temp_filename);
     free(temp_filename);
     if (!pcm2file->whdl) {
+		printf("---4\n");
         goto __out;
     }
 
     enc_write_file_set_evt_handler(pcm2file->whdl, pcm2file_enc_w_evt, pcm2file);
     enc_write_file_set_input(pcm2file->whdl, &pcm2file_enc_w_input, pcm2file, sizeof(pcm2file->out_file_frame));
     //if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726)) {
-    if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726) || (pfmt->coding_type == AUDIO_CODING_PCM)) {
+    if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726)) {
         pcm2file->file_head_len = WAV_FILE_HEAD_LEN;
         enc_write_file_set_head_handler(pcm2file->whdl, enc_wfile_set_head, pcm2file);
     }
@@ -477,6 +495,7 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
             pfmt->bit_rate = 64;
         }
     }
+    //cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
     cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
     audio_encoder_open(&pcm2file->encoder, &pcm2file_enc_input, encode_task);
     audio_encoder_set_handler(&pcm2file->encoder, &pcm2file_enc_handler);

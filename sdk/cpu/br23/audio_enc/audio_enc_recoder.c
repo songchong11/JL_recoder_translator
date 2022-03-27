@@ -949,8 +949,11 @@ int recorder_encode_start(struct record_file_fmt *f)
     if ((fmt.coding_type == AUDIO_CODING_WAV) || \
 		fmt.coding_type == AUDIO_CODING_G726 || \
 		fmt.coding_type == AUDIO_CODING_PCM) {
-        fmt.bit_rate    = RECORD_PLAYER_DEFULT_ADPCM_BLOCKSIZE;
-    } else {
+        	fmt.bit_rate    = RECORD_PLAYER_DEFULT_ADPCM_BLOCKSIZE;
+    } else if (fmt.coding_type == AUDIO_CODING_OPUS) {
+		fmt.bit_rate	= 1;//32k bps
+		afmt.quality = 0 /*| LOW_COMPLEX*/;
+	} else {
         fmt.bit_rate    = RECORD_PLAYER_DEFULT_BITRATE;
     }
     afmt.coding_type = fmt.coding_type;
@@ -973,6 +976,7 @@ int recorder_encode_start(struct record_file_fmt *f)
 
     u8 *buf = zalloc(size);
     if (!buf) {
+		printf("--1\n");
         return -1;
     }
     rec = (struct record_hdl *)(buf + offset);
@@ -982,6 +986,7 @@ int recorder_encode_start(struct record_file_fmt *f)
     rec->dev = dev_manager_find_spec(fmt.dev, 0);
     if (rec->dev == NULL) {
         free(rec);
+		printf("--2\n");
         return -1;
     }
 
@@ -993,6 +998,7 @@ int recorder_encode_start(struct record_file_fmt *f)
     if (!rec->file) {
         free(rec);
         recorder_encode_clock_remove(fmt.coding_type);
+		printf("--3\n");
         return -1;
     }
 
@@ -1000,7 +1006,7 @@ int recorder_encode_start(struct record_file_fmt *f)
     rec->cut_head_timer = sys_timeout_add(NULL, record_cut_head_timeout, fmt.cut_head_time);
 
     if ((fmt.coding_type == AUDIO_CODING_WAV) || (fmt.coding_type == AUDIO_CODING_G726)||
-		(fmt.coding_type == AUDIO_CODING_PCM)) {
+		(fmt.coding_type == AUDIO_CODING_PCM) || (fmt.coding_type == AUDIO_CODING_OPUS)) {
         cut_tail_size = (4 * fmt.sample_rate * fmt.channel) * fmt.cut_tail_time / 1000 / 8;
         cut_tail_size = ((cut_tail_size + fmt.bit_rate - 1) / fmt.bit_rate) * fmt.bit_rate;
     } else {
@@ -1017,6 +1023,8 @@ int recorder_encode_start(struct record_file_fmt *f)
     pcm2file_enc_set_evt_handler(rec->file, recorder_encode_event_handler, rec->magic);
     pcm2file_enc_write_file_set_limit(rec->file, cut_tail_size, fmt.limit_size);
     pcm2file_enc_start(rec->file);
+
+	printf("pcm2file_enc_start-- \n");
 
     switch (rec->source) {
     case ENCODE_SOURCE_MIX:
@@ -1036,6 +1044,8 @@ int recorder_encode_start(struct record_file_fmt *f)
         rec->adc_output.priv    = rec;
         if (audio_mic_open(&rec->mic_ch, fmt.sample_rate, fmt.gain) == 0) {
             audio_mic_add_output(&rec->adc_output);
+			
+			printf("audio_mic_start-- \n");
             audio_mic_start(&rec->mic_ch);
         }
 
