@@ -560,7 +560,7 @@ int audio_enc_init()
 #endif
 #endif/*RECORDER_MIX_EN*/
 #else
-#define LADC_IRQ_POINTS     256
+#define LADC_IRQ_POINTS     320//256
 #endif
 /* #define LADC_BUFS_SIZE      (LADC_CH_NUM * LADC_BUF_NUM * LADC_IRQ_POINTS) */
 

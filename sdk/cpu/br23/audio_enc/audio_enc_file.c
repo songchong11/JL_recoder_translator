@@ -48,9 +48,9 @@ extern struct audio_encoder_task *encode_task;
 struct pcm2file_enc_hdl {
     struct audio_encoder encoder;
     //s16 output_frame[1152 / 2];             //align 4Bytes
-	u8  output_frame[MIC_ENC_OUT_SIZE];
+	s16  output_frame[MIC_ENC_OUT_SIZE];
     //int pcm_frame[64];                 //align 4Bytes
-	u8	pcm_frame[MIC_ENC_IN_SIZE];
+	u8	pcm_frame[MIC_ENC_IN_SIZE * 4];
 
     u8 file_head_frame[128];
     u8 file_head_len;
@@ -59,7 +59,7 @@ struct pcm2file_enc_hdl {
     cbuffer_t pcm_cbuf;
 
     //int out_file_frame[512 / 4];
-	int out_file_frame[MIC_ENC_OUT_SIZE];
+	int out_file_frame[MIC_ENC_IN_SIZE * 4];
 
     /* u8 out_file_buf[PCM_ENC2FILE_FILE_LEN]; */
     u8 *out_file_buf;
@@ -131,7 +131,7 @@ int pcm2file_enc_write_pcm(void *priv, s16 *data, int len)
             enc->pcm_buf_max = enc->pcm_cbuf.data_len;
         }
 #endif
-         /*printf("wl:%d ", wlen);*/
+         printf("wl:%d ", wlen);
         // 激活录音编码器
         pcm2file_enc_resume(enc);
     }
@@ -164,7 +164,7 @@ static int pcm2file_enc_pcm_get(struct audio_encoder *encoder, s16 **frame, u16 
 
     dlen = cbuf_get_data_len(&enc->pcm_cbuf);
     if (dlen < frame_len) {
-        /* putchar('T');//__T__ */
+         putchar('T');//__T__ 
         return 0;
     }
 
@@ -197,6 +197,7 @@ static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame,
 {
     struct pcm2file_enc_hdl *enc = container_of(encoder, struct pcm2file_enc_hdl, encoder);
 
+	printf("output %d\n", len);
     int wlen = cbuf_write(&enc->out_file_cbuf, frame, len);
 #if PCM2FILE_ENC_BUF_COUNT
     if (enc->out_file_max < enc->out_file_cbuf.data_len) {
@@ -204,9 +205,9 @@ static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame,
     }
 #endif
     pcm2file_wfile_resume(enc);
-    /* if (wlen != len) { */
-    /* printf("X"); */
-    /* } */
+	 if (wlen != len) {
+	 	printf("X %d", wlen);
+	 }
     /* if (!enc->status) { */
     /* return 0; */
     /* } */
@@ -303,14 +304,14 @@ static int pcm2file_enc_w_get(void *hdl, s16 **frame, u16 frame_len)
     int rlen;
     struct pcm2file_enc_hdl *enc = hdl;
     os_sem_set(&enc->sem_wfile, 0);
-    /* printf("r:%d", frame_len); */
+    printf("r:%d", frame_len);
     do {
         rlen = cbuf_read(&enc->out_file_cbuf, enc->out_file_frame, frame_len);
         if (rlen == frame_len) {
-//            if (cbuf_get_data_len(&enc->out_file_cbuf) <= (PCM_ENC2FILE_FILE_LEN / 2)) {
+            if (cbuf_get_data_len(&enc->out_file_cbuf) <= (PCM_ENC2FILE_FILE_LEN / 2)) {
 //                ///当写文件有数据取走达到一定程度主动激活编码线程
-//                pcm2file_enc_resume(enc);
-//            }
+                pcm2file_enc_resume(enc);
+            }
             break;
         }
 
@@ -441,9 +442,9 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
             goto __out;
         }
         //pcm_buf_size = PCM_ENC2FILE_PCM_LEN;
-		pcm_buf_size = MIC_ENC_IN_SIZE * 4;
-        out_file_buf_size = PCM_ENC2FILE_FILE_LEN;
-        //out_file_buf_size = MIC_ENC_OUT_SIZE;
+		pcm_buf_size = MIC_ENC_IN_SIZE * 4;//2560
+        //out_file_buf_size = PCM_ENC2FILE_FILE_LEN;
+        out_file_buf_size = 10240 ;
         pcm2file->pcm_buf = zalloc(pcm_buf_size);
         if (pcm2file->pcm_buf == NULL) {
             goto __out;
@@ -495,8 +496,9 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
             pfmt->bit_rate = 64;
         }
     }
+	
     //cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
-    cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
+    cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, MIC_ENC_IN_SIZE * 4);
     audio_encoder_open(&pcm2file->encoder, &pcm2file_enc_input, encode_task);
     audio_encoder_set_handler(&pcm2file->encoder, &pcm2file_enc_handler);
     audio_encoder_set_fmt(&pcm2file->encoder, pfmt);

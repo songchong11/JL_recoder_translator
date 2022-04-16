@@ -11,6 +11,10 @@
 #include "dev_manager.h"
 #include "audio_track.h"
 
+#define ENC_ADC_BUF_NUM        (2)
+#define ENC_ADC_IRQ_POINTS     (320)
+
+
 #define LADC_MIC_BUF_NUM        2
 #define LADC_MIC_CH_NUM         1
 #define LADC_MIC_IRQ_POINTS     256
@@ -72,7 +76,7 @@ void audio_adc_mic_demo(u16 sr)
         audio_adc_mic_open(&ladc_mic->mic_ch, AUDIO_ADC_MIC_CH, &adc_hdl);
         audio_adc_mic_set_sample_rate(&ladc_mic->mic_ch, sr);
         audio_adc_mic_set_gain(&ladc_mic->mic_ch, 20);
-        audio_adc_mic_set_buffs(&ladc_mic->mic_ch, ladc_mic->adc_buf, LADC_MIC_IRQ_POINTS * 2, LADC_MIC_BUF_NUM);
+        audio_adc_mic_set_buffs(&ladc_mic->mic_ch, ladc_mic->adc_buf, ENC_ADC_IRQ_POINTS * 2, ENC_ADC_BUF_NUM);
         ladc_mic->adc_output.handler = adc_mic_demo_output;
         ladc_mic->adc_output.priv = &adc_hdl;
         audio_adc_add_output_handler(&adc_hdl, &ladc_mic->adc_output);
@@ -85,7 +89,7 @@ void audio_adc_mic_demo(u16 sr)
 
 int audio_adc_mic_init(u16 sr)
 {
-    //printf("ladc_mic_open:%d\n",sr);
+    printf("ladc_mic_open:%d\n",sr);
     u8 ladc_mic_gain = 5;
     ASSERT(ladc_mic == NULL);
     ladc_mic = zalloc(sizeof(struct ladc_mic_demo));
@@ -93,7 +97,7 @@ int audio_adc_mic_init(u16 sr)
         audio_adc_mic_open(&ladc_mic->mic_ch, AUDIO_ADC_MIC_CH, &adc_hdl);
         audio_adc_mic_set_sample_rate(&ladc_mic->mic_ch, sr);
         audio_adc_mic_set_gain(&ladc_mic->mic_ch, ladc_mic_gain);
-        audio_adc_mic_set_buffs(&ladc_mic->mic_ch, ladc_mic->adc_buf, LADC_MIC_IRQ_POINTS * 2, LADC_MIC_BUF_NUM);
+        audio_adc_mic_set_buffs(&ladc_mic->mic_ch, ladc_mic->adc_buf, ENC_ADC_IRQ_POINTS * 2, ENC_ADC_BUF_NUM);
         audio_adc_mic_start(&ladc_mic->mic_ch);
         return 0;
     } else {
@@ -804,7 +808,7 @@ static void recorder_encode_clock_add(u32 coding_type)
         clock_add(ENC_WAV_CLK);
     } else if (coding_type == AUDIO_CODING_G726) {
         clock_add(ENC_G726_CLK);
-    } else if (coding_type == AUDIO_CODING_MP3) {
+    } else if (coding_type == AUDIO_CODING_MP3 || coding_type == AUDIO_CODING_OPUS) {
         clock_add(ENC_MP3_CLK);
     }
     clock_set_cur();
@@ -816,7 +820,7 @@ static void recorder_encode_clock_remove(u32 coding_type)
         clock_remove(ENC_WAV_CLK);
     } else if (coding_type == AUDIO_CODING_G726) {
         clock_remove(ENC_G726_CLK);
-    } else if (coding_type == AUDIO_CODING_MP3) {
+    } else if (coding_type == AUDIO_CODING_MP3 || coding_type == AUDIO_CODING_OPUS) {
         clock_remove(ENC_MP3_CLK);
     }
     clock_set_cur();
@@ -949,17 +953,21 @@ int recorder_encode_start(struct record_file_fmt *f)
     if ((fmt.coding_type == AUDIO_CODING_WAV) || \
 		fmt.coding_type == AUDIO_CODING_G726 || \
 		fmt.coding_type == AUDIO_CODING_PCM) {
+        	//fmt.bit_rate    = RECORD_PLAYER_DEFULT_ADPCM_BLOCKSIZE;
         	fmt.bit_rate    = RECORD_PLAYER_DEFULT_ADPCM_BLOCKSIZE;
     } else if (fmt.coding_type == AUDIO_CODING_OPUS) {
-		fmt.bit_rate	= 1;//32k bps
-		afmt.quality = 0 /*| LOW_COMPLEX*/;
+		fmt.sample_rate = 16000;
+		fmt.bit_rate = 128;
+		afmt.quality = 0;
+		
 	} else {
         fmt.bit_rate    = RECORD_PLAYER_DEFULT_BITRATE;
     }
+
     afmt.coding_type = fmt.coding_type;
     afmt.channel = fmt.channel;
     afmt.sample_rate = fmt.sample_rate;
-    afmt.bit_rate = fmt.bit_rate;
+	afmt.bit_rate = fmt.bit_rate;
 
     if (rec_hdl) {
         recorder_encode_stop();
@@ -976,7 +984,6 @@ int recorder_encode_start(struct record_file_fmt *f)
 
     u8 *buf = zalloc(size);
     if (!buf) {
-		printf("--1\n");
         return -1;
     }
     rec = (struct record_hdl *)(buf + offset);
@@ -986,7 +993,6 @@ int recorder_encode_start(struct record_file_fmt *f)
     rec->dev = dev_manager_find_spec(fmt.dev, 0);
     if (rec->dev == NULL) {
         free(rec);
-		printf("--2\n");
         return -1;
     }
 
@@ -998,7 +1004,6 @@ int recorder_encode_start(struct record_file_fmt *f)
     if (!rec->file) {
         free(rec);
         recorder_encode_clock_remove(fmt.coding_type);
-		printf("--3\n");
         return -1;
     }
 
@@ -1034,7 +1039,9 @@ int recorder_encode_start(struct record_file_fmt *f)
         audio_adc_mic_open(&rec->mic_ch, AUDIO_ADC_MIC_CH, &adc_hdl);
         audio_adc_mic_set_sample_rate(&rec->mic_ch, fmt.sample_rate);
         audio_adc_mic_set_gain(&rec->mic_ch, fmt.gain);///调节录音mic的增益
-        audio_adc_mic_set_buffs(&rec->mic_ch, rec->adc_buf, LADC_MIC_IRQ_POINTS * 2, LADC_MIC_BUF_NUM);
+        //audio_adc_mic_set_buffs(&rec->mic_ch, rec->adc_buf, LADC_MIC_IRQ_POINTS * 2, LADC_MIC_BUF_NUM);
+		audio_adc_mic_set_buffs(&rec->mic_ch, rec->adc_buf,
+								ENC_ADC_IRQ_POINTS * 2, ENC_ADC_BUF_NUM);
 
         rec->adc_output.handler = adc_output_to_enc;
         audio_adc_add_output_handler(&adc_hdl, &rec->adc_output);
@@ -1044,9 +1051,7 @@ int recorder_encode_start(struct record_file_fmt *f)
         rec->adc_output.priv    = rec;
         if (audio_mic_open(&rec->mic_ch, fmt.sample_rate, fmt.gain) == 0) {
             audio_mic_add_output(&rec->adc_output);
-			
-			printf("audio_mic_start-- \n");
-            audio_mic_start(&rec->mic_ch);
+			audio_mic_start(&rec->mic_ch);
         }
 
 #endif

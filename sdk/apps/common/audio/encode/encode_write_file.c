@@ -111,6 +111,8 @@ static void enc_write_file_task(void *p)
         if (pend_dly) {
             os_sem_pend(&wfil->sem_task_run, pend_dly);
         }
+		
+		printf("wfil->init_ok %d\n", wfil->init_ok);
         if (!wfil->init_ok) {
             wfil->wait_idle = 0;
             wfil->start = 0;
@@ -118,11 +120,14 @@ static void enc_write_file_task(void *p)
             break;
         }
         pend_dly++;
+		
+		printf("wfil->start %d\n", wfil->start);
         if (!wfil->start) {
             continue;
         }
         len = wfil->input->get(wfil->input_hdl, &frame, wfil->input_frame_len);
         if (len) {
+			printf("w----- len %d\n", len);
             if (wfil->write_err == 0) {
                 ret = fwrite(wfil->file, frame, len);
                 wfil->file_size = fpos(wfil->file);
@@ -171,10 +176,12 @@ int enc_write_file_resume(void *hdl)
 {
     struct enc_write_file *wfil = hdl;
     if (wfil->start && (wfil->write_err == 0)) {
-        os_sem_set(&wfil->sem_task_run, 0);
+		printf("fresu\n");
+		os_sem_set(&wfil->sem_task_run, 0);
         os_sem_post(&wfil->sem_task_run);
         return 0;
     }
+	printf("fresu err\n");
     return -1;
 }
 

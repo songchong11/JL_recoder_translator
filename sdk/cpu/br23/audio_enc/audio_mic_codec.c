@@ -27,7 +27,7 @@ struct mic_enc_hdl {
     struct audio_encoder encoder;
     OS_SEM pcm_frame_sem;
     u8 output_frame[MIC_ENC_OUT_SIZE];
-    u8  pcm_frame[MIC_ENC_IN_SIZE];
+    u8  pcm_frame[MIC_ENC_IN_SIZE * 2];
     u8 frame_size;
     u8 in_cbuf_buf[MIC_ENC_IN_SIZE * 4];
     cbuffer_t pcm_in_cbuf;
