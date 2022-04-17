@@ -16,7 +16,7 @@
 ///---sdp service record profile- 用户选择支持协议--///
 #if (BT_FOR_APP_EN || APP_ONLINE_DEBUG)
 #undef USER_SUPPORT_PROFILE_SPP
-#define USER_SUPPORT_PROFILE_SPP   0
+#define USER_SUPPORT_PROFILE_SPP   1//modifed by sc
 #endif
 
 //ble demo的例子

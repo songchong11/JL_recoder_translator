@@ -25,13 +25,13 @@
 //*********************************************************************************//
 //                                  app 配置                                       //
 //*********************************************************************************//
-#define TCFG_APP_BT_EN			            0
+#define TCFG_APP_BT_EN			            1
 #define TCFG_APP_MUSIC_EN			        1
 #define TCFG_APP_LINEIN_EN					0
 #define TCFG_APP_FM_EN					    0
 #define TCFG_APP_PC_EN					    1
 #define TCFG_APP_RTC_EN					    0
-#define TCFG_APP_RECORD_EN				    1
+#define TCFG_APP_RECORD_EN				    0
 #define TCFG_APP_SPDIF_EN                   0
 //*********************************************************************************//
 //                               PCM_DEBUG调试配置                                 //
@@ -608,17 +608,17 @@ DAC硬件上的连接方式,可选的配置：
 //                                  蓝牙配置                                       //
 //*********************************************************************************//
 #define TCFG_USER_TWS_ENABLE                0   //tws功能使能
-#define TCFG_USER_BLE_ENABLE                0   //BLE功能使能
-#define TCFG_USER_BT_CLASSIC_ENABLE         0   //经典蓝牙功能使能
+#define TCFG_USER_BLE_ENABLE                1   //BLE功能使能
+#define TCFG_USER_BT_CLASSIC_ENABLE         1   //经典蓝牙功能使能
 #define TCFG_BT_SUPPORT_AAC                 0   //AAC格式支持
 #define TCFG_USER_EMITTER_ENABLE            0   //emitter功能使能
 #define TCFG_BT_SNIFF_ENABLE                0   //bt sniff 功能使能
 
-#define USER_SUPPORT_PROFILE_SPP    0
+#define USER_SUPPORT_PROFILE_SPP    1
 #define USER_SUPPORT_PROFILE_HFP    0
-#define USER_SUPPORT_PROFILE_A2DP   0
+#define USER_SUPPORT_PROFILE_A2DP   1
 #define USER_SUPPORT_PROFILE_AVCTP  0
-#define USER_SUPPORT_PROFILE_HID    0
+#define USER_SUPPORT_PROFILE_HID    1
 #define USER_SUPPORT_PROFILE_PNP    0
 #define USER_SUPPORT_PROFILE_PBAP   0
 
@@ -653,7 +653,7 @@ DAC硬件上的连接方式,可选的配置：
 #endif
 
 /*在线调试，需要打开SPP和在线调试功能*/
-#define APP_ONLINE_DEBUG                    0
+#define APP_ONLINE_DEBUG                    1
 
 #if (APP_ONLINE_DEBUG && !USER_SUPPORT_PROFILE_SPP)
 #error "NEED ENABLE USER_SUPPORT_PROFILE_SPP!!!"
@@ -815,7 +815,7 @@ DAC硬件上的连接方式,可选的配置：
 //*********************************************************************************//
 //ali ai profile
 #define DUEROS_DMA_EN              0  //not surport
-#define TRANS_DATA_EN              0  //not surport
+#define TRANS_DATA_EN              1  //not surport
 #define	ANCS_CLIENT_EN			   0
 
 #if (DUEROS_DMA_EN || TRANS_DATA_EN || ANCS_CLIENT_EN)
