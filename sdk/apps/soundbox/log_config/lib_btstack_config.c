@@ -54,7 +54,7 @@ const int config_le_gatt_client_num = 1;   //支持client角色个数
 
 #else
 const int config_le_hci_connection_num = 1;//支持同时连接个数
-const int config_le_sm_support_enable = 0; //是否支持加密配对
+const int config_le_sm_support_enable = 1; //是否支持加密配对
 const int config_le_gatt_server_num = 1;   //支持server角色个数
 const int config_le_gatt_client_num = 0;   //支持client角色个数
 #endif
