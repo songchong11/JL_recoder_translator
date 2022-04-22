@@ -1970,7 +1970,7 @@ u8 bt_hci_event_filter(struct bt_event *bt)
 #if TCFG_USER_BLE_ENABLE
             //1:edr con;2:ble con;
             if (1 == bt->value) {
-                extern void ble_module_enable(u8 en);
+                extern void ble_module_enable(u8 enable);
                 /* bt_ble_adv_enable(0); */
                 ble_module_enable(0);
             }
