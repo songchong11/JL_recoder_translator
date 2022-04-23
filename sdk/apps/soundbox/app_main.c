@@ -61,10 +61,12 @@ void app_task_loop()
             log_info("APP_FM_TASK \n");
             app_fm_task();
             break;
+#if 1
         case APP_RECORD_TASK:
             log_info("APP_RECORD_TASK \n");
             app_record_task();
             break;
+#endif
         case APP_LINEIN_TASK:
             log_info("APP_LINEIN_TASK \n");
             app_linein_task();

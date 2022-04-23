@@ -733,7 +733,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
         break;
 #endif
     case ATT_CHARACTERISTIC_C2E758B9_0E78_41E0_B0CB_98A593193FC5_01_VALUE_HANDLE:
-        printf("\n-------receive data (%d):", buffer_size);
+        //printf("\n-------receive data (%d):", buffer_size);
         printf_buf(buffer, buffer_size);
 
 		receive_data_form_app(buffer, buffer_size);

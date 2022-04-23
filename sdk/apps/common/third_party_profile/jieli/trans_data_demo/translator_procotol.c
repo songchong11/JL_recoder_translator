@@ -24,6 +24,7 @@
 #include "system/includes.h"
 
 #include "translator_procotol.h"
+#include "../../../../soundbox/include/task_manager/record/record.h"
 
 unsigned char check_crc(u8 *data, u8 len, u8 crc)
 {
@@ -103,60 +104,61 @@ void receive_data_form_app(u8 *data, u8 len)
 
 	case DEVICE_RECEIVE_HAND_SHAKE:
 		// TODO: del the timer
-		printf("receive app hand shake\n");
+		printf("--------------receive app hand shake\n");
 		break;
 
 	case DEVICE_RECEIVE_GET_DEV_INFO:
 		// TODO:send dev info to app
-		printf("app get dev info\n");
+		printf("--------------app get dev info\n");
+		start_record_by_app_cmd();
 		break;
 
 	case DEVICE_RECEIVE_GET_MAC_ADDR:
 		// TODO:send dev mac to app
-		printf("app get dev mac addr\n");
+		printf("--------------app get dev mac addr\n");
 		send_dev_mac_to_app();
 		break;
 
 	case DEVICE_RECEIVE_SET_BLE_NAME:
 		// TODO:set ble name
-		printf("app set ble name\n");
+		printf("--------------app set ble name\n");
 		break;
 
 	case DEVICE_RECEIVE_GET_BAT_LEVEL:
 		// TODO:get   bat level 
-		printf("app get bat level\n");
+		printf("--------------app get bat level\n");
 		break;
 
 	case DEVICE_RECEIVE_SET_COUNTRY_INFO:
 		// TODO:set country info
-		printf("app set country info\n");
+		printf("--------------app set country info\n");
 		break;
 
 	case DEVICE_RECEIVE_GET_COUNTRY_INFO:
 		// TODO:get country info
-		printf("app get country info\n");
+		printf("--------------app get country info\n");
 		break;
 
 	case DEVICE_RECEIVE_SET_QUDAO_INFO:
 		// TODO:set qudao    info
-		printf("app set qudao info\n");
+		printf("--------------app set qudao info\n");
 		break;
 
 	case DEVICE_RECEIVE_GET_QUDAO_INFO:
 		// TODO:set qudao info
-		printf("app get qudao info\n");
+		printf("--------------app get qudao info\n");
 		break;
 
 	case DEVICE_RECEIVE_KEY_LEFT_LONG_DOWN:
-		printf("app ack key left long down\n");
+		printf("--------------app ack key left long down\n");
 		break;
 
 	case DEVICE_RECEIVE_KEY_LEFT_LONG_UP:
-		printf("app ack key left long up\n");
+		printf("--------------app ack key left long up\n");
 		break;
 
 	case DEVICE_RECEIVE_KEY_RIGHT_LONG_DOWN:
-		printf("app ack key right long down\n");
+		printf("--------------app ack key right long down\n");
 		break;
 
 	case DEVICE_RECEIVE_KEY_RIGHT_LONG_UP:
@@ -165,20 +167,20 @@ void receive_data_form_app(u8 *data, u8 len)
 
 	case DEVICE_RECEIVE_REQUEST_SEND_VOICE_DATA:
 		// TODO: start recoder and send voice data
-		printf("app ack request send voice\n");
+		printf("--------------app ack request send voice\n");
 		break;
 
 	case DEVICE_RECEIVE_STOP_RECODER:
 		// TODO: stop recoder and stop send voice data
-		printf("app stop recoder and stop send voice\n");
+		printf("--------------app stop recoder and stop send voice\n");
 		break;
 
 	case DEVICE_RECEIVE_PLAY_PREVIOUS:
-		printf("app ack play previous\n");
+		printf("--------------app ack play previous\n");
 		break;
 
 	case DEVICE_RECEIVE_PLAY_NEXT:
-		printf("app ack play next\n");
+		printf("--------------app ack play next\n");
 		break;
 
 	}

@@ -39,7 +39,7 @@
 #include "clock_cfg.h"
 #include "dev_manager.h"
 
-#if TCFG_APP_RECORD_EN
+#if 1//TCFG_APP_RECORD_EN
 
 #define LOG_TAG_CONST       APP_RECORD
 #define LOG_TAG             "[APP_RECORD]"
@@ -130,6 +130,21 @@ static void record_key_pp()
         record_file_close();
         record_mic_start();
         log_i("mic record start\n");
+    }
+}
+
+void start_record_by_app_cmd(void)
+{
+	printf("start_recoder_by_app_cmd\n");
+	record_mic_start();
+}
+
+void stop_record_by_app_cmd(void)
+{
+	printf("stop_recoder_by_app_cmd\n");
+
+    if (recorder_is_encoding()) {
+        record_mic_stop();
     }
 }
 
