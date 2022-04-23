@@ -41,6 +41,7 @@
 #include "rcsp_bluetooth.h"
 #include "JL_rcsp_api.h"
 #include "custom_cfg.h"
+#include "translator_procotol.h"
 
 
 #if (TCFG_BLE_DEMO_SELECT == DEF_BLE_DEMO_TRANS_DATA)
@@ -157,8 +158,8 @@ static void (*app_ble_state_callback)(void *priv, ble_state_e state) = NULL;
 static void (*ble_resume_send_wakeup)(void) = NULL;
 static u32 channel_priv;
 
-static int app_send_user_data_check(u16 len);
-static int app_send_user_data_do(void *priv, u8 *data, u16 len);
+int app_send_user_data_check(u16 len);
+int app_send_user_data_do(void *priv, u8 *data, u16 len);
 static int app_send_user_data(u16 handle, u8 *data, u16 len, u8 handle_type);
 
 // Complete Local Name  默认的蓝牙名字
@@ -718,6 +719,8 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
             test_data_send_packet();
         }
 #endif
+
+		send_hand_shake_to_app();
         break;
 
 #if 0
@@ -730,20 +733,24 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
         break;
 #endif
     case ATT_CHARACTERISTIC_C2E758B9_0E78_41E0_B0CB_98A593193FC5_01_VALUE_HANDLE:
-        printf("\n-ae01_rx(%d):", buffer_size);
+        printf("\n-------receive data (%d):", buffer_size);
         printf_buf(buffer, buffer_size);
+
+		receive_data_form_app(buffer, buffer_size);
+
+#if 0
 
         //收发测试，自动发送收到的数据;for test
         if (app_send_user_data_check(buffer_size)) {
             app_send_user_data(ATT_CHARACTERISTIC_B84AC9C6_29C5_46D4_BBA1_9D534784330F_01_VALUE_HANDLE, buffer, buffer_size, ATT_OP_AUTO_READ_CCC);
         }
-
 #if TEST_SEND_DATA_RATE
         if ((buffer[0] == 'A') && (buffer[1] == 'F')) {
             test_data_start = 1;//start
         } else if ((buffer[0] == 'A') && (buffer[1] == 'A')) {
             test_data_start = 0;//stop
         }
+#endif
 #endif
         break;
 
@@ -788,7 +795,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
     return 0;
 }
 
-static int app_send_user_data(u16 handle, u8 *data, u16 len, u8 handle_type)
+int app_send_user_data(u16 handle, u8 *data, u16 len, u8 handle_type)
 {
     u32 ret = APP_BLE_NO_ERROR;
 
@@ -1116,7 +1123,7 @@ static int get_buffer_vaild_len(void *priv)
     return vaild_len;
 }
 
-static int app_send_user_data_do(void *priv, u8 *data, u16 len)
+int app_send_user_data_do(void *priv, u8 *data, u16 len)
 {
 #if PRINT_DMA_DATA_EN
     if (len < 128) {
@@ -1126,10 +1133,10 @@ static int app_send_user_data_do(void *priv, u8 *data, u16 len)
         putchar('L');
     }
 #endif
-    return app_send_user_data(ATT_CHARACTERISTIC_B84AC9C6_29C5_46D4_BBA1_9D534784330F_01_CLIENT_CONFIGURATION_HANDLE, data, len, ATT_OP_AUTO_READ_CCC);
+    return app_send_user_data(ATT_CHARACTERISTIC_B84AC9C6_29C5_46D4_BBA1_9D534784330F_01_VALUE_HANDLE, data, len, ATT_OP_AUTO_READ_CCC);
 }
 
-static int app_send_user_data_check(u16 len)
+int app_send_user_data_check(u16 len)
 {
     u32 buf_space = get_buffer_vaild_len(0);
     if (len <= buf_space) {

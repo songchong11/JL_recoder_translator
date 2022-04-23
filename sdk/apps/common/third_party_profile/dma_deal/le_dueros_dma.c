@@ -47,7 +47,7 @@
 #if (TCFG_BLE_DEMO_SELECT == DEF_BLE_DEMO_DUEROS_DMA)
 
 #define TEST_SEND_DATA_RATE         0  //测试
-#define PRINT_DMA_DATA_EN           1
+#define PRINT_DMA_DATA_EN           0
 
 
 #if 1
