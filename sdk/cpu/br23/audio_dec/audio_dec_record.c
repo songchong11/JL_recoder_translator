@@ -62,10 +62,12 @@ int record_file_play(void)
     record_file_close();
 
     char path[64] = {0};
+#if 0
     ret = last_enc_file_path_get(path);
     if (ret) {
         return -1;
     }
+#endif
     record_file = fopen(path, "r");
     if (!record_file) {
         return -1;

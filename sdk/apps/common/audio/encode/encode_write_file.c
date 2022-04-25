@@ -48,57 +48,6 @@ void last_enc_file_codeing_type_save(u32 type)
 	enc_file_coding_type = type;
 }
 
-//获取最后录音文件的序号. 用于录音播放， -1表示无效
-int last_enc_file_path_get(char path[64])
-{
-#if TCFG_NOR_REC || FLASH_INSIDE_REC_ENABLE
-	int index = 0;
-    char logo[20] = {0};
-
-#if TCFG_NOR_REC
-    strcpy(logo, "rec_nor");
-    sprintf(path, "%s%s%s", dev_manager_get_root_path_by_logo(logo), REC_FOLDER_NAME"/AC69****",".WAV");
-#elif FLASH_INSIDE_REC_ENABLE
-    char index_str[5] = {0};
-    index = flashinsize_rec_get_index();
-    memset(logo, 0, 20);
-    memset(path, 0, 64);
-    strcpy(logo, "rec_sdfile");
-
-	index_str[0] = index / 1000 + '0';
-    index_str[1] = index % 1000 / 100 + '0';
-    index_str[2] = index % 100 / 10 + '0';
-    index_str[3] = index % 10 + '0';
-    sprintf(path, "%s%s%s%s", dev_manager_get_root_path_by_logo(logo), REC_FOLDER_NAME"/AC69", index_str, ".WAV");
-#endif
-    printf("rec file =%s\n", path);
-    return 0;
-
-#else
-
-    char index_str[5] = {0};
-    char *logo = dev_manager_get_phy_logo(dev_manager_find_active(0));//最后活动设备
-    printf("enc file idex = %d, dev_path = %s\n", enc_file_index, dev_manager_get_root_path_by_logo(logo));
-    if (enc_file_index != (u32) - 1) {
-        index_str[0] = enc_file_index / 1000 + '0';
-        index_str[1] = enc_file_index % 1000 / 100 + '0';
-        index_str[2] = enc_file_index % 100 / 10 + '0';
-        index_str[3] = enc_file_index % 10 + '0';
-        if ((enc_file_coding_type == AUDIO_CODING_WAV) || (enc_file_coding_type == AUDIO_CODING_PCM)) {
-            sprintf(path, "%s%s%s%s", dev_manager_get_root_path_by_logo(logo), REC_FOLDER_NAME"/AC69", index_str, ".WAV");
-        } else if (enc_file_coding_type == AUDIO_CODING_G726) {
-            sprintf(path, "%s%s%s%s", dev_manager_get_root_path_by_logo(logo), REC_FOLDER_NAME"/AC69", index_str, ".wav");
-        } else if (enc_file_coding_type == AUDIO_CODING_MP3) {
-            sprintf(path, "%s%s%s%s", dev_manager_get_root_path_by_logo(logo), REC_FOLDER_NAME"/AC69", index_str, ".MP3");
-        } else {
-            return -1;
-        }
-        printf("rec file =%s\n", path);
-        return 0;
-    }
-    return 	-1;
-#endif
-}
 
 static void enc_write_file_task(void *p)
 {
@@ -129,23 +78,13 @@ static void enc_write_file_task(void *p)
         if (len) {
 			printf("w----- len %d\n", len);
             if (wfil->write_err == 0) {
-                ret = fwrite(wfil->file, frame, len);
-                wfil->file_size = fpos(wfil->file);
-#if TCFG_NOR_REC || FLASH_INSIDE_REC_ENABLE
-                int max_capacity = 0;
-#if TCFG_NOR_REC
-                max_capacity =  get_rec_capacity(wfil->file);
-#elif FLASH_INSIDE_REC_ENABLE
-                max_capacity = flashinsize_rec_get_capacity();
-#endif
-                if (wfil->file_size + len > (max_capacity - 4096)) {
-                    log_w("rec is overflow!!!!!!!!!!!!!");
-                    wfil->write_err_no_check = 1;
-                    wfil->write_err = 1;
-                } else {
-                    wfil->write_err_no_check = 0;
-                }
-#endif
+                //ret = fwrite(wfil->file, frame, len);
+                // TODO: send a notify to app
+                printf("notify to app \n");
+
+				extern int app_send_user_data_do(void *priv, u8 *data, u16 len);
+                app_send_user_data_do(NULL, (u8 *)frame, len);
+
             } else {
                 ret = 0;
             }
@@ -200,6 +139,7 @@ void enc_write_file_close(void *hdl)
         task_kill("enc_write");
     }
 
+#if 0
     if (wfil->file) {
         int f_len = fpos(wfil->file);
         struct vfs_attr attr = {0};
@@ -245,52 +185,24 @@ void enc_write_file_close(void *hdl)
         }
         wfil->file = NULL;
     }
+#endif
     free(wfil);
 }
 
-static u32 get_creat_path_len(char *root_path, const char *folder, const char *filename)
-{
-	return (strlen(root_path) + strlen(folder) + strlen(filename) + strlen("/") + 1);
-}
-
-static char *create_path(char *path, char *root_path, const char *folder, const char *filename)
-{
-    strcat(path, root_path);
-    strcat(path, folder);
-    strcat(path, "/");
-    strcat(path, filename);
-#if TCFG_NOR_REC
-#elif FLASH_INSIDE_REC_ENABLE
-    int index = 0;
-    int last_num = -1;
-    char *file_num_str;
-
-    index = sdfile_rec_scan_ex();
-	last_num = index + 1;
-    file_num_str = strrchr(path, '.') - 4;
-
-    if (last_num > 9999) {
-        last_num = 0;
-    }
-    file_num_str[0] = last_num / 1000 + '0';
-    file_num_str[1] = last_num % 1000 / 100 + '0';
-    file_num_str[2] = last_num % 100 / 10 + '0';
-    file_num_str[3] = last_num % 10 + '0';
-#endif
-    printf(">>>[test]:create path =%s\n", path);
-    return path;
-}
 
 void *enc_write_file_open(char *logo, const char *folder, const char *filename)
 {
+#if 0
     if (!logo || !folder || !filename) {
         return NULL;
     }
+#endif
     int err;
     struct enc_write_file *wfil = zalloc(sizeof(struct enc_write_file));
     if (!wfil) {
         return NULL;
 	}
+#if 0 //removed by sc
 	struct __dev *dev = dev_manager_find_spec(logo, 0);
 	if(!dev){
 		free(wfil);
@@ -317,7 +229,7 @@ void *enc_write_file_open(char *logo, const char *folder, const char *filename)
         goto _exit;
     }
     enc_file_index = get_last_num(); //获取最后的数字
-
+#endif
     /* r_printf(">>>[test]:enc_file_index = %d\n", enc_file_index); */
     os_sem_create(&wfil->sem_task_run, 0);
     err = task_create(enc_write_file_task, wfil, "enc_write");
@@ -390,12 +302,6 @@ void enc_write_file_set_input(void *hdl, struct audio_enc_write_input *input, vo
     wfil->input_frame_len = input_frame_len;
 }
 
-void enc_write_file_set_limit(void *hdl, u32 cut_size, u32 limit_size)
-{
-    struct enc_write_file *wfil = hdl;
-    wfil->cut_size = cut_size;
-    wfil->limit_size = limit_size;
-}
 
 int get_enc_file_len(void *hdl)
 {

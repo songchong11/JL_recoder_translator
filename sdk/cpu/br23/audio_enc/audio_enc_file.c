@@ -420,20 +420,6 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     ///创建录音编码线程
     audio_encoder_task_open();
 
-#if (RECORDER_MIX_EN && PCM_ENC2FILE_USE_OVERLAY_EN)
-    if (BT_CALL_HANGUP != get_call_status()) {
-        printf("[%s], used overlay!!\n", __FUNCTION__);
-        pcm2file_used_overlay = 1;
-        pcm2file = &pcm2file_enc_overlay_handle;
-        memset(&pcm2file_enc_overlay_handle, 0, sizeof(struct pcm2file_enc_hdl));
-        pcm2file->pcm_buf = pcm_buf_overlay;
-        pcm2file->out_file_buf = out_file_buf_overlay;
-        pcm_buf_size = PCM_ENC2FILE_PCM_LEN_OVERLAY;
-        out_file_buf_size = PCM_ENC2FILE_FILE_LEN_OVERLAY;
-        memset(pcm2file->pcm_buf, 0, PCM_ENC2FILE_PCM_LEN_OVERLAY);
-        memset(pcm2file->out_file_buf, 0, PCM_ENC2FILE_FILE_LEN_OVERLAY);
-    } else
-#endif/*RECORDER_MIX_EN*/
     {
         printf("[%s], used malloc!!\n", __FUNCTION__);
         pcm2file_used_overlay = 0;
@@ -455,48 +441,24 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
         }
 
     }
+	//pcm2file->whdl = enc_write_file_open(logo, folder, temp_filename);
+	pcm2file->whdl = enc_write_file_open(NULL, NULL, NULL);
+
+	printf("[%s], -----1-----------\n", __FUNCTION__);
 
     os_sem_create(&pcm2file->sem_wfile, 0);
     os_mutex_create(&pcm2file->mutex);
     cbuf_init(&pcm2file->out_file_cbuf, pcm2file->out_file_buf, out_file_buf_size);
+	printf("[%s], -----1.1-----------\n", __FUNCTION__);
 
-    temp_filename = zalloc(strlen(filename) + 5);
-    if (temp_filename == NULL) {
-        goto __out;
-    }
-    if (pfmt->coding_type == AUDIO_CODING_MP3) {
-        strcat(temp_filename, filename);
-        strcat(temp_filename, ".mp3");
-    } else if (pfmt->coding_type == AUDIO_CODING_WAV || pfmt->coding_type == AUDIO_CODING_G726) {
-        strcat(temp_filename, filename);
-        strcat(temp_filename, ".wav");
-    } else if (pfmt->coding_type == AUDIO_CODING_PCM) {
-		strcat(temp_filename, filename);
-		strcat(temp_filename, ".pcm");
-	} else if (pfmt->coding_type == AUDIO_CODING_OPUS) {
-		strcat(temp_filename, filename);
-		strcat(temp_filename, ".opu");
-	}
-    pcm2file->whdl = enc_write_file_open(logo, folder, temp_filename);
-    free(temp_filename);
-    if (!pcm2file->whdl) {
-		printf("---4\n");
-        goto __out;
-    }
-
+	if (pcm2file->whdl == NULL)
+		printf("[%s], -----1.1--pcm2file->whdl == NULL---------\n", __FUNCTION__);
     enc_write_file_set_evt_handler(pcm2file->whdl, pcm2file_enc_w_evt, pcm2file);
+
+	printf("[%s], -----1.2-----------\n", __FUNCTION__);
     enc_write_file_set_input(pcm2file->whdl, &pcm2file_enc_w_input, pcm2file, sizeof(pcm2file->out_file_frame));
-    //if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726)) {
-    if ((pfmt->coding_type == AUDIO_CODING_WAV) || (pfmt->coding_type == AUDIO_CODING_G726)) {
-        pcm2file->file_head_len = WAV_FILE_HEAD_LEN;
-        enc_write_file_set_head_handler(pcm2file->whdl, enc_wfile_set_head, pcm2file);
-    }
-    if (pfmt->coding_type == AUDIO_CODING_MP3) {
-        if ((pfmt->sample_rate < 16000) && (pfmt->bit_rate > 64)) {
-            pfmt->bit_rate = 64;
-        }
-    }
-	
+	printf("[%s], -----2-----------\n", __FUNCTION__);
+
     //cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
     cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, MIC_ENC_IN_SIZE * 4);
     audio_encoder_open(&pcm2file->encoder, &pcm2file_enc_input, encode_task);
@@ -504,6 +466,7 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     audio_encoder_set_fmt(&pcm2file->encoder, pfmt);
     audio_encoder_set_output_buffs(&pcm2file->encoder, pcm2file->output_frame,
                                    sizeof(pcm2file->output_frame), 1);
+	printf("[%s], -----3-----------\n", __FUNCTION__);
 
     return pcm2file;
 __out:
@@ -569,12 +532,6 @@ int pcm2file_enc_is_work(void *hdl)
         return false;
     }
     return true;
-}
-
-int get_pcm2file_enc_file_len(void *hdl)
-{
-    struct pcm2file_enc_hdl *pcm2file = hdl;
-    return get_enc_file_len(pcm2file->whdl);
 }
 
 struct audio_encoder *get_pcm2file_encoder_hdl(void *hdl)

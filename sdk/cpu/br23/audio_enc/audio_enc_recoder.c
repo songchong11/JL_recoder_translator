@@ -990,12 +990,13 @@ int recorder_encode_start(struct record_file_fmt *f)
     offset += REC_ALIN(sizeof(struct record_hdl), 4);
 
     rec->source = fmt.source;
+#if 0 // removed by sc
     rec->dev = dev_manager_find_spec(fmt.dev, 0);
     if (rec->dev == NULL) {
         free(rec);
         return -1;
     }
-
+#endif
     rec->sample_rate = fmt.sample_rate;
     rec->nchl = fmt.channel;
     rec->coding_type = fmt.coding_type;
@@ -1024,9 +1025,7 @@ int recorder_encode_start(struct record_file_fmt *f)
         rec->err_callback = fmt.err_callback;
     }
 
-    last_enc_file_codeing_type_save(afmt.coding_type);
     pcm2file_enc_set_evt_handler(rec->file, recorder_encode_event_handler, rec->magic);
-    pcm2file_enc_write_file_set_limit(rec->file, cut_tail_size, fmt.limit_size);
     pcm2file_enc_start(rec->file);
 
 	printf("pcm2file_enc_start-- \n");
