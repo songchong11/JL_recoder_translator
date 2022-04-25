@@ -899,11 +899,15 @@ int bt_key_event_handler(struct sys_event *event)
         break;
     case  KEY_MUSIC_PREV:
         log_info("    KEY_MUSIC_PREV \n");
-        bt_key_music_prev();
+        //bt_key_music_prev();
+		extern void stop_record_by_app_cmd(void);
+		stop_record_by_app_cmd();
         break;
     case  KEY_MUSIC_NEXT:
         log_info("    KEY_MUSIC_NEXT \n");
-        bt_key_music_next();
+        //bt_key_music_next();
+		extern void start_record_by_app_cmd(void);
+		start_record_by_app_cmd();
         break;
     case  KEY_VOL_UP:
         log_info("    KEY_VOL_UP \n");

@@ -40,7 +40,7 @@
 #define ENC_ADC_BUFS_SIZE      (ENC_ADC_BUF_NUM * ENC_ADC_IRQ_POINTS)
 
 #define MIC_USE_MIC_CHANNEL    (1)
-#define MIC_ENC_IN_SIZE		(ENC_ADC_IRQ_POINTS * 2)
+#define MIC_ENC_IN_SIZE		   (ENC_ADC_IRQ_POINTS * 2)
 #define MIC_ENC_OUT_SIZE       (ENC_ADC_IRQ_POINTS)
 
 extern struct audio_encoder_task *encode_task;
@@ -195,9 +195,28 @@ static int pcm2file_enc_probe_handler(struct audio_encoder *encoder)
 // 编码器输出
 static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame, int len)
 {
+	static u8 voice_data[120];
+	static u8 cnt = 0;
+
     struct pcm2file_enc_hdl *enc = container_of(encoder, struct pcm2file_enc_hdl, encoder);
 
-	printf("output %d\n", len);
+	memcpy(&voice_data[cnt * len], frame, len);
+	cnt++;
+	printf("output %d, cnt %d\n", len, cnt);
+
+	if (cnt == 3) {
+		extern int app_send_user_data_do(void *priv, u8 *data, u16 len);
+		int ret = app_send_user_data_do(NULL, voice_data, sizeof(voice_data));
+		if (ret)
+			printf("send voice data err\n");
+
+		cnt = 0;
+	}
+
+    return len;
+    //return wlen;
+
+#if 0
     int wlen = cbuf_write(&enc->out_file_cbuf, frame, len);
 #if PCM2FILE_ENC_BUF_COUNT
     if (enc->out_file_max < enc->out_file_cbuf.data_len) {
@@ -214,8 +233,9 @@ static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame,
     if (enc->enc_err) {
         return 0;
     }
-
     return wlen;
+	
+#endif
 }
 
 static void pcm2file_enc_get_head_info(struct audio_encoder *encoder)
@@ -444,20 +464,13 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
 	//pcm2file->whdl = enc_write_file_open(logo, folder, temp_filename);
 	pcm2file->whdl = enc_write_file_open(NULL, NULL, NULL);
 
-	printf("[%s], -----1-----------\n", __FUNCTION__);
-
     os_sem_create(&pcm2file->sem_wfile, 0);
     os_mutex_create(&pcm2file->mutex);
     cbuf_init(&pcm2file->out_file_cbuf, pcm2file->out_file_buf, out_file_buf_size);
-	printf("[%s], -----1.1-----------\n", __FUNCTION__);
 
-	if (pcm2file->whdl == NULL)
-		printf("[%s], -----1.1--pcm2file->whdl == NULL---------\n", __FUNCTION__);
     enc_write_file_set_evt_handler(pcm2file->whdl, pcm2file_enc_w_evt, pcm2file);
 
-	printf("[%s], -----1.2-----------\n", __FUNCTION__);
     enc_write_file_set_input(pcm2file->whdl, &pcm2file_enc_w_input, pcm2file, sizeof(pcm2file->out_file_frame));
-	printf("[%s], -----2-----------\n", __FUNCTION__);
 
     //cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
     cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, MIC_ENC_IN_SIZE * 4);

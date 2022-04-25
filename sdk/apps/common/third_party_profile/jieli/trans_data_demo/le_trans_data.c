@@ -113,13 +113,13 @@ static const uint8_t sm_min_key_size = 7;
 //是否使能参数请求更新,0--disable, 1--enable
 static const uint8_t connection_update_enable = 1; ///0--disable, 1--enable
 //当前请求的参数表index
-static uint8_t connection_update_cnt = 0; //
+static uint8_t connection_update_cnt = 2; //
 
 //参数表
 static const struct conn_update_param_t connection_param_table[] = {
     {16, 24, 10, 600},//11
     {12, 28, 10, 600},//3.7
-    {8,  20, 10, 600},
+    {6,  16, 10, 600},
     /* {12, 28, 4, 600},//3.7 */
     /* {12, 24, 30, 600},//3.05 */
 };

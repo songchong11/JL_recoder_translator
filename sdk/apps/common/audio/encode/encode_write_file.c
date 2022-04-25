@@ -83,7 +83,7 @@ static void enc_write_file_task(void *p)
                 printf("notify to app \n");
 
 				extern int app_send_user_data_do(void *priv, u8 *data, u16 len);
-                app_send_user_data_do(NULL, (u8 *)frame, len);
+                //app_send_user_data_do(NULL, (u8 *)frame, len);
 
             } else {
                 ret = 0;
