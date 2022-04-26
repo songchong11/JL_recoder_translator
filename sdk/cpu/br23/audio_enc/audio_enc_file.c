@@ -468,11 +468,10 @@ void *pcm2file_enc_open(struct audio_fmt *pfmt, char *logo, char *folder, char *
     os_mutex_create(&pcm2file->mutex);
     cbuf_init(&pcm2file->out_file_cbuf, pcm2file->out_file_buf, out_file_buf_size);
 
-    enc_write_file_set_evt_handler(pcm2file->whdl, pcm2file_enc_w_evt, pcm2file);
+    // enc_write_file_set_evt_handler(pcm2file->whdl, pcm2file_enc_w_evt, pcm2file);
 
-    enc_write_file_set_input(pcm2file->whdl, &pcm2file_enc_w_input, pcm2file, sizeof(pcm2file->out_file_frame));
+    //enc_write_file_set_input(pcm2file->whdl, &pcm2file_enc_w_input, pcm2file, sizeof(pcm2file->out_file_frame));
 
-    //cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, pcm_buf_size);
     cbuf_init(&pcm2file->pcm_cbuf, pcm2file->pcm_buf, MIC_ENC_IN_SIZE * 4);
     audio_encoder_open(&pcm2file->encoder, &pcm2file_enc_input, encode_task);
     audio_encoder_set_handler(&pcm2file->encoder, &pcm2file_enc_handler);
@@ -508,8 +507,8 @@ void pcm2file_enc_close(void **hdl)
     pcm2file->status = 0;
     os_mutex_post(&pcm2file->mutex);
     audio_encoder_close(&pcm2file->encoder);
-    enc_write_file_stop(pcm2file->whdl, 1000);
-    enc_write_file_close(pcm2file->whdl);
+    //enc_write_file_stop(pcm2file->whdl, 1000);
+    //enc_write_file_close(pcm2file->whdl);
 
     printf("pcm2file_enc_close, lost:%d ", pcm2file->lost);
 

@@ -232,11 +232,13 @@ void *enc_write_file_open(char *logo, const char *folder, const char *filename)
 #endif
     /* r_printf(">>>[test]:enc_file_index = %d\n", enc_file_index); */
     os_sem_create(&wfil->sem_task_run, 0);
+#if 0
     err = task_create(enc_write_file_task, wfil, "enc_write");
     if (err != OS_NO_ERR) {
         log_e("task create err ");
         goto _exit;
     }
+#endif
     wfil->init_ok = 1;
 
     return wfil;
