@@ -67,5 +67,9 @@ enum{
 	
 extern void receive_data_form_app(u8 *data, u8 len);
 extern void send_hand_shake_to_app(void);
+extern void send_left_key_press_to_app(void);
+extern void send_left_key_up_to_app(void);
+extern void send_right_key_press_to_app(void);
+extern void send_right_key_up_to_app(void);
 
 #endif

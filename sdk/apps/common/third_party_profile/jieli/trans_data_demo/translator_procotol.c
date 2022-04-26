@@ -86,6 +86,137 @@ void send_dev_mac_to_app(void)
 }
 
 
+void send_left_key_press_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_KEY_LEFT_LONG_DOWN;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_left_key_press_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+void send_left_key_up_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_KEY_LEFT_LONG_UP;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_left_key_up_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+
+void send_right_key_press_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_KEY_RIGHT_LONG_DOWN;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_right_key_press_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+void send_right_key_up_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_KEY_RIGHT_LONG_UP;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_right_key_up_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+
+void send_request_send_voice_data_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_REQUEST_SEND_VOICE_DATA;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_request_send_voice_data_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+
+void device_send_ack_stop_voice_data_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_STOP_RECODER;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("device_send_ack_stop_voice_data_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+void send_play_prev_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_PLAY_PREVIOUS;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_play_prev_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+void send_play_next_to_app(void)
+{
+	u8 data[7];
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_PLAY_NEXT;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = 0x00;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_play_next_to_app \n");
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
 //Parse the data received from the app
 void receive_data_form_app(u8 *data, u8 len)
 {
@@ -151,6 +282,8 @@ void receive_data_form_app(u8 *data, u8 len)
 
 	case DEVICE_RECEIVE_KEY_LEFT_LONG_DOWN:
 		printf("--------------app ack key left long down\n");
+		printf("--------------request send voice\n");
+		send_request_send_voice_data_to_app();
 		break;
 
 	case DEVICE_RECEIVE_KEY_LEFT_LONG_UP:
@@ -159,6 +292,8 @@ void receive_data_form_app(u8 *data, u8 len)
 
 	case DEVICE_RECEIVE_KEY_RIGHT_LONG_DOWN:
 		printf("--------------app ack key right long down\n");
+		printf("--------------request send voice\n");
+		send_request_send_voice_data_to_app();
 		break;
 
 	case DEVICE_RECEIVE_KEY_RIGHT_LONG_UP:
@@ -166,13 +301,16 @@ void receive_data_form_app(u8 *data, u8 len)
 		break;
 
 	case DEVICE_RECEIVE_REQUEST_SEND_VOICE_DATA:
-		// TODO: start recoder and send voice data
 		printf("--------------app ack request send voice\n");
+		extern void start_record_by_app_cmd(void);
+		start_record_by_app_cmd();
 		break;
 
 	case DEVICE_RECEIVE_STOP_RECODER:
-		// TODO: stop recoder and stop send voice data
 		printf("--------------app stop recoder and stop send voice\n");
+		//extern void stop_record_by_app_cmd(void);
+		//stop_record_by_app_cmd();
+		device_send_ack_stop_voice_data_to_app();
 		break;
 
 	case DEVICE_RECEIVE_PLAY_PREVIOUS:

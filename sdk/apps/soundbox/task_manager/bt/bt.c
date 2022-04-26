@@ -899,15 +899,11 @@ int bt_key_event_handler(struct sys_event *event)
         break;
     case  KEY_MUSIC_PREV:
         log_info("    KEY_MUSIC_PREV \n");
-        //bt_key_music_prev();
-		extern void stop_record_by_app_cmd(void);
-		stop_record_by_app_cmd();
+        bt_key_music_prev();
         break;
     case  KEY_MUSIC_NEXT:
         log_info("    KEY_MUSIC_NEXT \n");
-        //bt_key_music_next();
-		extern void start_record_by_app_cmd(void);
-		start_record_by_app_cmd();
+        bt_key_music_next();
         break;
     case  KEY_VOL_UP:
         log_info("    KEY_VOL_UP \n");
@@ -917,6 +913,43 @@ int bt_key_event_handler(struct sys_event *event)
         log_info("    KEY_VOL_DOWN \n");
         bt_key_vol_down();
         break;
+
+	case KEY_BLE_PREV:
+		log_info("    KEY_BLE_PREV \n");
+		extern send_play_prev_to_app(void);
+		send_play_prev_to_app();
+		break;
+
+	case KEY_BLE_NEXT:
+		log_info("    KEY_BLE_NEXT \n");
+		extern send_play_next_to_app(void);
+		send_play_next_to_app();
+		break;
+
+	case KEY_BLE_LEFT_START_VOICE:
+		log_info("    KEY_BLE_LEFT_START_VOICE \n");
+		extern void send_left_key_press_to_app(void);
+		send_left_key_press_to_app();
+		break;
+
+	case KEY_BLE_RIGHT_START_VOICE:
+		log_info("    KEY_BLE_RIGHT_START_VOICE \n");
+		extern void send_right_key_press_to_app(void);
+		send_right_key_press_to_app();
+		break;
+
+	case KEY_BLE_LEFT_VOICE_STOP:
+		log_info("    KEY_BLE_LEFT_VOICE_STOP \n");
+		extern void send_left_key_up_to_app(void);
+		send_left_key_up_to_app();
+		break;
+
+	case KEY_BLE_RIGHT_VOICE_STOP:
+		log_info("    KEY_BLE_RIGHT_VOICE_STOP \n");
+		extern void send_right_key_up_to_app(void);
+		send_right_key_up_to_app();
+		break;
+
     case  KEY_CALL_LAST_NO:
         log_info("    KEY_CALL_LAST_NO \n");
         bt_key_call_last_on();
