@@ -217,6 +217,65 @@ void send_play_next_to_app(void)
 	app_send_user_data_do(NULL, data, sizeof(data));
 }
 
+void send_battery_precent_to_app(void)
+{
+	u8 data[7];
+
+	u8 precent = get_vbat_percent();
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_GET_BAT_LEVEL;
+	data[3] = 0x02;/*len == cmd + data*/
+	data[4] = precent;
+	data[5] = data[2] + data[3] + data[4];/*crc = cmd + len + data*/
+	data[6] = TAIL;
+	printf("send_battery_precent_to_app %d \n", precent);
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+
+void send_dev_info_to_app(void)
+{
+	u8 data[23];
+	u8 crc = 0;
+
+	data[0] = HEARD_H;
+	data[1] = HEARD_L;
+	data[2] = DEVICE_SEND_GET_DEV_INFO;
+	/*len == cmd + data*/
+	data[3] = 19;
+	/*data*/
+	data[4] = 'h';
+	data[5] = 'a';
+	data[6] = 'r';
+	data[7] = 'd';
+	data[8] = ':';
+	data[9] = '1';
+	data[10] = '.';
+	data[11] = '0';
+	data[12] = 's';
+	data[13] = 'o';
+	data[14] = 'f';
+	data[15] = 't';
+	data[16] = ':';
+	data[17] = '1';
+	data[18] = '.';
+	data[19] = '0';
+	data[20] = '.';
+	data[21] = '1';
+	/*crc = cmd + len + data*/
+	for (int i = 2; i < 22; i++)
+		crc += data[i];
+
+	data[22] = crc;
+	data[23] = TAIL;
+	//收发测试，自动发送收到的数据;for test
+	app_send_user_data_do(NULL, data, sizeof(data));
+}
+
+
 int connect_timer = 0;
 
 //Parse the data received from the app
@@ -247,7 +306,7 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_GET_DEV_INFO:
 		// TODO:send dev info to app
 		printf("--------------app get dev info\n");
-		//start_record_by_app_cmd();
+		send_dev_info_to_app();
 		break;
 
 	case DEVICE_RECEIVE_GET_MAC_ADDR:
@@ -259,16 +318,21 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_SET_BLE_NAME:
 		// TODO:set ble name
 		printf("--------------app set ble name\n");
+		//int syscfg_read(CFG_USER_DEFINE_APP_SET_NAME, void *buf, u16 len);
+		//int syscfg_write(CFG_USER_DEFINE_APP_SET_NAME, void *buf, u16 len);
 		break;
 
 	case DEVICE_RECEIVE_GET_BAT_LEVEL:
 		// TODO:get   bat level 
 		printf("--------------app get bat level\n");
+		send_battery_precent_to_app();
 		break;
 
 	case DEVICE_RECEIVE_SET_COUNTRY_INFO:
 		// TODO:set country info
 		printf("--------------app set country info\n");
+		//int syscfg_read(CFG_USER_DEFINE_APP_SET_COUNTRY_INFO, void *buf, u16 len);
+		//int syscfg_write(CFG_USER_DEFINE_APP_SET_COUNTRY_INFO, void *buf, u16 len);
 		break;
 
 	case DEVICE_RECEIVE_GET_COUNTRY_INFO:
@@ -279,6 +343,8 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_SET_QUDAO_INFO:
 		// TODO:set qudao    info
 		printf("--------------app set qudao info\n");
+		//int syscfg_read(CFG_USER_DEFINE_APP_SET_QUDAO_INFO, void *buf, u16 len);
+		//int syscfg_write(CFG_USER_DEFINE_APP_SET_QUDAO_INFO, void *buf, u16 len);
 		break;
 
 	case DEVICE_RECEIVE_GET_QUDAO_INFO:
@@ -314,8 +380,8 @@ void receive_data_form_app(u8 *data, u8 len)
 
 	case DEVICE_RECEIVE_STOP_RECODER:
 		printf("--------------app stop recoder and stop send voice\n");
-		//extern void stop_record_by_app_cmd(void);
-		//stop_record_by_app_cmd();
+		extern void stop_record_by_app_cmd(void);
+		stop_record_by_app_cmd();
 		device_send_ack_stop_voice_data_to_app();
 		break;
 

@@ -131,7 +131,7 @@ int pcm2file_enc_write_pcm(void *priv, s16 *data, int len)
             enc->pcm_buf_max = enc->pcm_cbuf.data_len;
         }
 #endif
-         printf("wl:%d ", wlen);
+         //printf("wl:%d ", wlen);
         // 激活录音编码器
         pcm2file_enc_resume(enc);
     }
@@ -153,7 +153,7 @@ static int pcm2file_enc_pcm_get(struct audio_encoder *encoder, s16 **frame, u16 
         r_printf("enc NULL");
     }
 
-	printf("l:%d", frame_len);
+	//printf("l:%d", frame_len);
 
     if (!enc->status) {
         return 0;
@@ -202,7 +202,8 @@ static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame,
 
 	memcpy(&voice_data[cnt * len], frame, len);
 	cnt++;
-	printf("output %d, cnt %d\n", len, cnt);
+	//printf("output %d, cnt %d\n", len, cnt);
+	printf(".");
 
 	if (cnt == 3) {
 		extern int app_send_user_data_do(void *priv, u8 *data, u16 len);

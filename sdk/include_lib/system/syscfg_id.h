@@ -67,8 +67,13 @@ u8 *syscfg_ptr_read(u16 item_id, u16 *len);
 //=================================================================================//
 //                             用户自定义配置项[1 ~ 49]                            //
 //=================================================================================//
-#define 	CFG_USER_DEFINE_BEGIN		1
-#define 	CFG_USER_DEFINE_END			49
+#define 	CFG_USER_DEFINE_BEGIN					1
+
+#define 	CFG_USER_DEFINE_APP_SET_NAME			2
+#define 	CFG_USER_DEFINE_APP_SET_COUNTRY_INFO	3
+#define 	CFG_USER_DEFINE_APP_SET_QUDAO_INFO		4
+
+#define 	CFG_USER_DEFINE_END						49
 
 //=================================================================================//
 //                             只存VM配置项[50 ~ 99]                         	   //
