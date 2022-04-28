@@ -218,6 +218,13 @@
 #define TCFG_IOKEY_NEXT_CONNECT_WAY 		ONE_PORT_TO_LOW  //按键一端接低电平一端接IO
 #define TCFG_IOKEY_NEXT_ONE_PORT			IO_PORTB_02
 
+#define TCFG_IOKEY_LEFT_CONNECT_WAY 		ONE_PORT_TO_LOW  //按键一端接低电平一端接IO
+#define TCFG_IOKEY_LEFT_ONE_PORT			IO_PORTB_04
+
+#define TCFG_IOKEY_RIGHT_CONNECT_WAY 		ONE_PORT_TO_LOW  //按键一端接低电平一端接IO
+#define TCFG_IOKEY_RIGHT_ONE_PORT			IO_PORTB_06
+
+
 //*********************************************************************************//
 //                                 adkey 配置                                      //
 //*********************************************************************************//

@@ -285,6 +285,18 @@ const struct iokey_port iokey_list[] = {
         .key_type.one_io.port = TCFG_IOKEY_NEXT_ONE_PORT,
         .key_value = 2,
     },
+
+    {
+        .connect_way = TCFG_IOKEY_LEFT_CONNECT_WAY,
+        .key_type.one_io.port = TCFG_IOKEY_LEFT_ONE_PORT,
+        .key_value = 3,
+    },
+
+    {
+        .connect_way = TCFG_IOKEY_RIGHT_CONNECT_WAY,
+        .key_type.one_io.port = TCFG_IOKEY_RIGHT_ONE_PORT,
+        .key_value = 4,
+    },
 };
 const struct iokey_platform_data iokey_data = {
     .enable = TCFG_IOKEY_ENABLE,                              //是否使能IO按键

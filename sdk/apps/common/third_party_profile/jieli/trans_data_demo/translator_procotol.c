@@ -217,6 +217,8 @@ void send_play_next_to_app(void)
 	app_send_user_data_do(NULL, data, sizeof(data));
 }
 
+int connect_timer = 0;
+
 //Parse the data received from the app
 void receive_data_form_app(u8 *data, u8 len)
 {
@@ -236,12 +238,16 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_HAND_SHAKE:
 		// TODO: del the timer
 		printf("--------------receive app hand shake\n");
+		if (connect_timer) {
+			sys_timeout_del(connect_timer);
+			connect_timer = 0;
+		}
 		break;
 
 	case DEVICE_RECEIVE_GET_DEV_INFO:
 		// TODO:send dev info to app
 		printf("--------------app get dev info\n");
-		start_record_by_app_cmd();
+		//start_record_by_app_cmd();
 		break;
 
 	case DEVICE_RECEIVE_GET_MAC_ADDR:

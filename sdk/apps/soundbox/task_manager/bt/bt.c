@@ -865,6 +865,8 @@ int bt_background_event_handler(struct sys_event *event)
 //}
 //#endif
 
+static bool voice_status = false;
+
 /*----------------------------------------------------------------------------*/
 /**@brief    蓝牙模式按键响应处理
    @param    event: 按键
@@ -929,7 +931,10 @@ int bt_key_event_handler(struct sys_event *event)
 	case KEY_BLE_LEFT_START_VOICE:
 		log_info("    KEY_BLE_LEFT_START_VOICE \n");
 		extern void send_left_key_press_to_app(void);
-		send_left_key_press_to_app();
+		if (voice_status != true) {
+			voice_status = true;
+			send_left_key_press_to_app();
+		}
 		break;
 
 	case KEY_BLE_RIGHT_START_VOICE:
@@ -941,6 +946,7 @@ int bt_key_event_handler(struct sys_event *event)
 	case KEY_BLE_LEFT_VOICE_STOP:
 		log_info("    KEY_BLE_LEFT_VOICE_STOP \n");
 		extern void send_left_key_up_to_app(void);
+		voice_status = false;
 		send_left_key_up_to_app();
 		break;
 

@@ -11,6 +11,9 @@
 
 #define		TAIL		0x21
 
+
+extern int connect_timer;
+
 enum{
 	DEVICE_SEND_HAND_SHAKE = 0x01,
 	DEVICE_RECEIVE_HAND_SHAKE,

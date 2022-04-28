@@ -674,6 +674,13 @@ static uint16_t att_read_callback(hci_con_handle_t connection_handle, uint16_t a
 
 }
 
+void ble_module_enable(u8 en);
+void user_disconnect(void *priv)
+{
+	printf("No hand shake send back, disconnect\n");
+	ble_module_enable(0);
+}
+
 
 /* LISTING_END */
 /*
@@ -721,6 +728,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
 #endif
 
 		send_hand_shake_to_app();
+		connect_timer = sys_timeout_add(NULL, user_disconnect, (1000 * 60));
         break;
 
 #if 0
