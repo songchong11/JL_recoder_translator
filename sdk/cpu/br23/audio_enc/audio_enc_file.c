@@ -195,17 +195,22 @@ static int pcm2file_enc_probe_handler(struct audio_encoder *encoder)
 // 编码器输出
 static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame, int len)
 {
-	static u8 voice_data[120];
+	static u8 voice_data[164];
 	static u8 cnt = 0;
 
     struct pcm2file_enc_hdl *enc = container_of(encoder, struct pcm2file_enc_hdl, encoder);
 
-	memcpy(&voice_data[cnt * len], frame, len);
+	voice_data[0] = 0x10;
+	voice_data[1] = 0x81;
+	voice_data[2] = 0x00;
+	voice_data[3] = 0xa0;
+
+	memcpy(&voice_data[4 + (cnt * len)], frame, len);
 	cnt++;
 	//printf("output %d, cnt %d\n", len, cnt);
 	printf(".");
 
-	if (cnt == 3) {
+	if (cnt == 4) {
 		extern int app_send_user_data_do(void *priv, u8 *data, u16 len);
 		int ret = app_send_user_data_do(NULL, voice_data, sizeof(voice_data));
 		if (ret)
