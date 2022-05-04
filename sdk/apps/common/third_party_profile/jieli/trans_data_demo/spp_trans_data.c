@@ -9,6 +9,7 @@
 #include "spp_trans_data.h"
 #include "bt_common.h"
 #include "btstack/avctp_user.h"
+#include "translator_procotol.h"
 
 #if 1
 extern void printf_buf(u8 *buf, u32 len);
@@ -33,6 +34,8 @@ static u32 spp_timer_handle = 0;
 static u32 spp_test_start;
 #endif
 
+u8 trans_mode = 0;
+
 #define SPP_DATA_RECIEVT_FLOW      0//流控功能使能
 
 void rfcomm_change_credits_setting(u16 init_credits, u8 base);
@@ -48,6 +51,7 @@ int transport_spp_send_data(u8 *data, u16 len)
         log_info("spp_api_tx(%d) \n", len);
         /* log_info_hexdump(data, len); */
         clear_sniff_cnt();
+	printf("spp s %d\n", len);
         return spp_api->send_data(NULL, data, len);
     }
     return SPP_USER_ERR_SEND_FAIL;
@@ -68,13 +72,15 @@ static void transport_spp_state_cbk(u8 state)
     spp_state = state;
     switch (state) {
     case SPP_USER_ST_CONNECT:
-        log_info("SPP_USER_ST_CONNECT ~~~\n");
-
+        log_info("SPP_USER_ST_CONNECT ~~~ sc ++++\n");
+		trans_mode = SPP_MODE;
+		send_hand_shake_to_app(trans_mode);
         break;
 
     case SPP_USER_ST_DISCONN:
-        log_info("SPP_USER_ST_DISCONN ~~~\n");
+        log_info("SPP_USER_ST_DISCONN ~~~ sc ----\n");
         spp_channel = 0;
+		trans_mode = NONE_MODE;
 
         break;
 
@@ -104,9 +110,22 @@ static void transport_spp_recieve_cbk(void *priv, u8 *buf, u16 len)
     }
 #endif
 
+#if 0
     //loop send data for test
     if (transport_spp_send_data_check(len)) {
         transport_spp_send_data(buf, len);
+    }
+#endif
+	receive_data_form_app(buf, len, trans_mode);
+
+}
+
+
+void spp_send_data_to_app(u8 *data, u8 len)
+{
+	printf("spp len %d\n", len);
+    if (transport_spp_send_data_check(len)) {
+        transport_spp_send_data(data, len);
     }
 }
 

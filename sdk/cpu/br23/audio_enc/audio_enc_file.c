@@ -11,6 +11,7 @@
 #include "dev_manager.h"
 #include "btstack/btstack_task.h"
 #include "btstack/avctp_user.h"
+#include "translator_procotol.h"
 
 #if TCFG_ENC_WRITE_FILE_ENABLE
 
@@ -192,11 +193,14 @@ static int pcm2file_enc_probe_handler(struct audio_encoder *encoder)
 {
     return 0;
 }
+
+extern u8 trans_mode;
 // 编码器输出
 static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame, int len)
 {
 	static u8 voice_data[164];
 	static u8 cnt = 0;
+	static int ret;
 
     struct pcm2file_enc_hdl *enc = container_of(encoder, struct pcm2file_enc_hdl, encoder);
 
@@ -208,11 +212,19 @@ static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame,
 	memcpy(&voice_data[4 + (cnt * len)], frame, len);
 	cnt++;
 	//printf("output %d, cnt %d\n", len, cnt);
-	printf(".");
 
 	if (cnt == 4) {
-		extern int app_send_user_data_do(void *priv, u8 *data, u16 len);
-		int ret = app_send_user_data_do(NULL, voice_data, sizeof(voice_data));
+		if (trans_mode == BLE_MODE) {
+			extern int app_send_user_data_do(void *priv, u8 *data, u16 len);
+			ret = app_send_user_data_do(NULL, voice_data, sizeof(voice_data));
+
+		} else {
+			
+			printf("S");
+			extern void spp_send_data_to_app(u8 *data, u8 len);
+			spp_send_data_to_app(voice_data, sizeof(voice_data));
+		}
+
 		if (ret)
 			printf("send voice data err\n");
 

@@ -118,6 +118,7 @@ struct app_bt_opr app_bt_hdl = {
 
 BT_USER_PRIV_VAR bt_user_priv_var;
 
+extern u8 trans_mode;
 
 
 /*----------------------------------------------------------------------------*/
@@ -918,42 +919,42 @@ int bt_key_event_handler(struct sys_event *event)
 
 	case KEY_BLE_PREV:
 		log_info("    KEY_BLE_PREV \n");
-		extern send_play_prev_to_app(void);
-		send_play_prev_to_app();
+		extern send_play_prev_to_app(u8 mode);
+		send_play_prev_to_app(trans_mode);
 		break;
 
 	case KEY_BLE_NEXT:
 		log_info("    KEY_BLE_NEXT \n");
-		extern send_play_next_to_app(void);
-		send_play_next_to_app();
+		extern send_play_next_to_app(u8 mode);
+		send_play_next_to_app(trans_mode);
 		break;
 
 	case KEY_BLE_LEFT_START_VOICE:
 		log_info("    KEY_BLE_LEFT_START_VOICE \n");
-		extern void send_left_key_press_to_app(void);
+		extern void send_left_key_press_to_app(u8 mode);
 		if (voice_status != true) {
 			voice_status = true;
-			send_left_key_press_to_app();
+			send_left_key_press_to_app(trans_mode);
 		}
 		break;
 
 	case KEY_BLE_RIGHT_START_VOICE:
 		log_info("    KEY_BLE_RIGHT_START_VOICE \n");
-		extern void send_right_key_press_to_app(void);
-		send_right_key_press_to_app();
+		extern void send_right_key_press_to_app(u8 mode);
+		send_right_key_press_to_app(trans_mode);
 		break;
 
 	case KEY_BLE_LEFT_VOICE_STOP:
 		log_info("    KEY_BLE_LEFT_VOICE_STOP \n");
-		extern void send_left_key_up_to_app(void);
+		extern void send_left_key_up_to_app(u8 mode);
 		voice_status = false;
-		send_left_key_up_to_app();
+		send_left_key_up_to_app(trans_mode);
 		break;
 
 	case KEY_BLE_RIGHT_VOICE_STOP:
 		log_info("    KEY_BLE_RIGHT_VOICE_STOP \n");
-		extern void send_right_key_up_to_app(void);
-		send_right_key_up_to_app();
+		extern void send_right_key_up_to_app(u8 mode);
+		send_right_key_up_to_app(trans_mode);
 		break;
 
     case  KEY_CALL_LAST_NO:

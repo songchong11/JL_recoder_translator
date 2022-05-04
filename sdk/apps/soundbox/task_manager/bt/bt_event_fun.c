@@ -434,10 +434,10 @@ void spp_data_handler(u8 packet_type, u16 ch, u8 *packet, u16 size)
 {
     switch (packet_type) {
     case 1:
-        log_debug("spp connect\n");
+        log_debug("spp connect +++++++\n");
         break;
     case 2:
-        log_debug("spp disconnect\n");
+        log_debug("spp disconnect -------\n");
         break;
     case 7:
         //log_info("spp_rx:");

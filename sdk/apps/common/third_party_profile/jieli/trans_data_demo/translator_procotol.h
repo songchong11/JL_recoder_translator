@@ -13,6 +13,13 @@
 
 
 extern int connect_timer;
+extern u8 trans_mode;
+
+enum {
+	NONE_MODE = 0,
+	BLE_MODE = 1,
+	SPP_MODE = 2,
+};
 
 enum{
 	DEVICE_SEND_HAND_SHAKE = 0x01,
@@ -68,11 +75,13 @@ enum{
 	DEVICE_RECEIVE_PLAY_NEXT = 0x1f
 };
 	
-extern void receive_data_form_app(u8 *data, u8 len);
-extern void send_hand_shake_to_app(void);
-extern void send_left_key_press_to_app(void);
-extern void send_left_key_up_to_app(void);
-extern void send_right_key_press_to_app(void);
-extern void send_right_key_up_to_app(void);
+extern void send_hand_shake_to_app(u8 mode);
+extern void spp_send_data_to_app(u8 *data, u8 len);
+
+extern void send_left_key_press_to_app(u8 mode);
+extern void send_left_key_up_to_app(u8 mode);
+extern void send_right_key_press_to_app(u8 mode);
+extern void send_right_key_up_to_app(u8 mode);
+extern void receive_data_form_app(u8 *data, u8 len, u8 mode);
 
 #endif

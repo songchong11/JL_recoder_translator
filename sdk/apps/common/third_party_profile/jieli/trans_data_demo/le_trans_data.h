@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include "app_config.h"
 
+extern u8 trans_mode;
+
 extern int app_send_user_data(u16 handle, u8 *data, u16 len, u8 handle_type);
 extern int app_send_user_data_check(u16 len);
 extern int app_send_user_data_do(void *priv, u8 *data, u16 len);

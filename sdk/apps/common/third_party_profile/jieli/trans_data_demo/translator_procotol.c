@@ -42,7 +42,7 @@ unsigned char check_crc(u8 *data, u8 len, u8 crc)
 
 
 
-void send_hand_shake_to_app(void)
+void send_hand_shake_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -55,10 +55,14 @@ void send_hand_shake_to_app(void)
 	data[6] = TAIL;
 	printf("app_send_user_data_do \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
-void send_dev_mac_to_app(void)
+void send_dev_mac_to_app(u8 mode)
 {
 	u8 data[12];
 	u8 crc = 0;
@@ -82,11 +86,14 @@ void send_dev_mac_to_app(void)
 	data[10] = crc;
 	data[11] = TAIL;
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
 
-void send_left_key_press_to_app(void)
+void send_left_key_press_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -99,10 +106,13 @@ void send_left_key_press_to_app(void)
 	data[6] = TAIL;
 	printf("send_left_key_press_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
-void send_left_key_up_to_app(void)
+void send_left_key_up_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -115,11 +125,14 @@ void send_left_key_up_to_app(void)
 	data[6] = TAIL;
 	printf("send_left_key_up_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
 
-void send_right_key_press_to_app(void)
+void send_right_key_press_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -132,10 +145,13 @@ void send_right_key_press_to_app(void)
 	data[6] = TAIL;
 	printf("send_right_key_press_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
-void send_right_key_up_to_app(void)
+void send_right_key_up_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -148,11 +164,14 @@ void send_right_key_up_to_app(void)
 	data[6] = TAIL;
 	printf("send_right_key_up_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
 
-void send_request_send_voice_data_to_app(void)
+void send_request_send_voice_data_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -165,11 +184,14 @@ void send_request_send_voice_data_to_app(void)
 	data[6] = TAIL;
 	printf("send_request_send_voice_data_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
 
-void device_send_ack_stop_voice_data_to_app(void)
+void device_send_ack_stop_voice_data_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -182,10 +204,13 @@ void device_send_ack_stop_voice_data_to_app(void)
 	data[6] = TAIL;
 	printf("device_send_ack_stop_voice_data_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
-void send_play_prev_to_app(void)
+void send_play_prev_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -198,10 +223,13 @@ void send_play_prev_to_app(void)
 	data[6] = TAIL;
 	printf("send_play_prev_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
-void send_play_next_to_app(void)
+void send_play_next_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -214,10 +242,13 @@ void send_play_next_to_app(void)
 	data[6] = TAIL;
 	printf("send_play_next_to_app \n");
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
-void send_battery_precent_to_app(void)
+void send_battery_precent_to_app(u8 mode)
 {
 	u8 data[7];
 
@@ -232,11 +263,14 @@ void send_battery_precent_to_app(void)
 	data[6] = TAIL;
 	printf("send_battery_precent_to_app %d \n", precent);
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
 
-void send_dev_info_to_app(void)
+void send_dev_info_to_app(u8         mode)
 {
 	u8 data[23];
 	u8 crc = 0;
@@ -272,15 +306,20 @@ void send_dev_info_to_app(void)
 	data[22] = crc;
 	data[23] = TAIL;
 	//收发测试，自动发送收到的数据;for test
-	app_send_user_data_do(NULL, data, sizeof(data));
+	if (mode == BLE_MODE)
+		app_send_user_data_do(NULL, data, sizeof(data));
+	else
+	 	spp_send_data_to_app(data, sizeof(data));
 }
 
 
 int connect_timer = 0;
 
 //Parse the data received from the app
-void receive_data_form_app(u8 *data, u8 len)
+void receive_data_form_app(u8 *data, u8 len, u8 mode)
 {
+
+	printf("**************** mode ****************** %x\n", mode);
 
 	if (data[0] != HEARD_H || data[1] != HEARD_L || data[len - 1] != TAIL)
 		return;
@@ -306,13 +345,13 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_GET_DEV_INFO:
 		// TODO:send dev info to app
 		printf("--------------app get dev info\n");
-		send_dev_info_to_app();
+		send_dev_info_to_app(mode);
 		break;
 
 	case DEVICE_RECEIVE_GET_MAC_ADDR:
 		// TODO:send dev mac to app
 		printf("--------------app get dev mac addr\n");
-		send_dev_mac_to_app();
+		send_dev_mac_to_app(mode);
 		break;
 
 	case DEVICE_RECEIVE_SET_BLE_NAME:
@@ -325,7 +364,7 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_GET_BAT_LEVEL:
 		// TODO:get   bat level 
 		printf("--------------app get bat level\n");
-		send_battery_precent_to_app();
+		send_battery_precent_to_app(mode);
 		break;
 
 	case DEVICE_RECEIVE_SET_COUNTRY_INFO:
@@ -355,7 +394,7 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_KEY_LEFT_LONG_DOWN:
 		printf("--------------app ack key left long down\n");
 		printf("--------------request send voice\n");
-		send_request_send_voice_data_to_app();
+		send_request_send_voice_data_to_app(mode);
 		break;
 
 	case DEVICE_RECEIVE_KEY_LEFT_LONG_UP:
@@ -365,7 +404,7 @@ void receive_data_form_app(u8 *data, u8 len)
 	case DEVICE_RECEIVE_KEY_RIGHT_LONG_DOWN:
 		printf("--------------app ack key right long down\n");
 		printf("--------------request send voice\n");
-		send_request_send_voice_data_to_app();
+		send_request_send_voice_data_to_app(mode);
 		break;
 
 	case DEVICE_RECEIVE_KEY_RIGHT_LONG_UP:
@@ -373,6 +412,7 @@ void receive_data_form_app(u8 *data, u8 len)
 		break;
 
 	case DEVICE_RECEIVE_REQUEST_SEND_VOICE_DATA:
+		printf("****************************************\n");
 		printf("--------------app ack request send voice\n");
 		extern void start_record_by_app_cmd(void);
 		start_record_by_app_cmd();
@@ -382,7 +422,7 @@ void receive_data_form_app(u8 *data, u8 len)
 		printf("--------------app stop recoder and stop send voice\n");
 		extern void stop_record_by_app_cmd(void);
 		stop_record_by_app_cmd();
-		device_send_ack_stop_voice_data_to_app();
+		device_send_ack_stop_voice_data_to_app(mode);
 		break;
 
 	case DEVICE_RECEIVE_PLAY_PREVIOUS:

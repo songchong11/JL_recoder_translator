@@ -521,6 +521,7 @@ static void cbk_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *p
 
         case HCI_EVENT_DISCONNECTION_COMPLETE:
             log_info("HCI_EVENT_DISCONNECTION_COMPLETE: %0x\n", packet[5]);
+			trans_mode = NONE_MODE;
 #if RCSP_BTMATE_EN
             rcsp_exit();
 #endif
@@ -726,8 +727,8 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
             test_data_send_packet();
         }
 #endif
-
-		send_hand_shake_to_app();
+		trans_mode = BLE_MODE;
+		send_hand_shake_to_app(trans_mode);
 		connect_timer = sys_timeout_add(NULL, user_disconnect, (1000 * 60));
         break;
 
@@ -744,7 +745,7 @@ static int att_write_callback(hci_con_handle_t connection_handle, uint16_t att_h
         //printf("\n-------receive data (%d):", buffer_size);
         printf_buf(buffer, buffer_size);
 
-		receive_data_form_app(buffer, buffer_size);
+		receive_data_form_app(buffer, buffer_size, trans_mode);
 
 #if 0
 
