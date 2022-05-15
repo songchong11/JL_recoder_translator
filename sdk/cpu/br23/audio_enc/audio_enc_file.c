@@ -219,8 +219,6 @@ static int pcm2file_enc_output_handler(struct audio_encoder *encoder, u8 *frame,
 			ret = app_send_user_data_do(NULL, voice_data, sizeof(voice_data));
 
 		} else {
-			
-			printf("S");
 			extern void spp_send_data_to_app(u8 *data, u8 len);
 			spp_send_data_to_app(voice_data, sizeof(voice_data));
 		}
