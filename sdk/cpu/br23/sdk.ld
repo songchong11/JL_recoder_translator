@@ -163,14 +163,6 @@ dts_decoder
 
 g729_decoder
 wav_decoder
-cvsd_encoder
-
-
-
-msbc_encoder
-
-
-
 mp3_encoder
 
 
@@ -184,7 +176,10 @@ adpcm_encoder
 
 
 pcm_encoder
-sbc_encoder
+
+
+
+opus_encoder
 );
 
 ENTRY(_start)
